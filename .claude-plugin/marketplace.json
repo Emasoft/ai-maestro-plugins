@@ -23,6 +23,84 @@
       "license": "MIT",
       "keywords": ["ai", "agents", "orchestration", "memory", "graph", "messaging", "amp"],
       "category": "productivity"
+    },
+    {
+      "name": "ai-maestro-assistant-manager-agent",
+      "source": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent",
+      "description": "User's right hand — sole interlocutor with user, directs other roles. Requires AI Maestro for inter-agent messaging.",
+      "version": "2.6.0",
+      "author": {
+        "name": "Emasoft"
+      },
+      "homepage": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent",
+      "license": "MIT",
+      "keywords": ["ai", "agents", "manager", "assistant", "role-plugin"],
+      "category": "productivity"
+    },
+    {
+      "name": "ai-maestro-chief-of-staff",
+      "source": "https://github.com/Emasoft/ai-maestro-chief-of-staff",
+      "description": "Per-team agent management — staff planning, lifecycle, governance workflows, failure recovery. Requires AI Maestro v0.26.0+.",
+      "version": "2.12.0",
+      "author": {
+        "name": "Emasoft"
+      },
+      "homepage": "https://github.com/Emasoft/ai-maestro-chief-of-staff",
+      "license": "MIT",
+      "keywords": ["ai", "agents", "chief-of-staff", "governance", "team", "role-plugin"],
+      "category": "productivity"
+    },
+    {
+      "name": "ai-maestro-architect-agent",
+      "source": "https://github.com/Emasoft/ai-maestro-architect-agent",
+      "description": "Design documents, requirements analysis, architecture decisions — creates specifications. Requires AI Maestro for inter-agent messaging.",
+      "version": "2.4.0",
+      "author": {
+        "name": "Emasoft"
+      },
+      "homepage": "https://github.com/Emasoft/ai-maestro-architect-agent",
+      "license": "MIT",
+      "keywords": ["ai", "agents", "architect", "design", "specifications", "role-plugin"],
+      "category": "productivity"
+    },
+    {
+      "name": "ai-maestro-integrator-agent",
+      "source": "https://github.com/Emasoft/ai-maestro-integrator-agent",
+      "description": "Quality gates, testing, merging, release candidates — ensures code quality. Requires AI Maestro for inter-agent messaging.",
+      "version": "1.2.0",
+      "author": {
+        "name": "Emasoft"
+      },
+      "homepage": "https://github.com/Emasoft/ai-maestro-integrator-agent",
+      "license": "MIT",
+      "keywords": ["ai", "agents", "integrator", "testing", "quality", "role-plugin"],
+      "category": "productivity"
+    },
+    {
+      "name": "ai-maestro-orchestrator-agent",
+      "source": "https://github.com/Emasoft/ai-maestro-orchestrator-agent",
+      "description": "Task distribution, agent coordination, progress monitoring — executes plans via subagents. Requires AI Maestro for inter-agent messaging.",
+      "version": "1.6.0",
+      "author": {
+        "name": "Emasoft"
+      },
+      "homepage": "https://github.com/Emasoft/ai-maestro-orchestrator-agent",
+      "license": "MIT",
+      "keywords": ["ai", "agents", "orchestrator", "coordination", "tasks", "role-plugin"],
+      "category": "productivity"
+    },
+    {
+      "name": "ai-maestro-programmer-agent",
+      "source": "https://github.com/Emasoft/ai-maestro-programmer-agent",
+      "description": "General-purpose programmer agent that writes code, runs tests, and creates PRs. Works standalone or as part of the AI Maestro ecosystem.",
+      "version": "1.0.20",
+      "author": {
+        "name": "Emasoft"
+      },
+      "homepage": "https://github.com/Emasoft/ai-maestro-programmer-agent",
+      "license": "MIT",
+      "keywords": ["ai", "agents", "programmer", "coding", "testing", "role-plugin"],
+      "category": "productivity"
     }
   ]
 }
