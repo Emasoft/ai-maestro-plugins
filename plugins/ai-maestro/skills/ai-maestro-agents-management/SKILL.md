@@ -355,6 +355,53 @@ aimaestro-agent.sh skill remove my-api custom-skill
 
 ---
 
+## Normal Plugins vs Role Plugins
+
+Claude Code has two kinds of plugins. Understanding the difference is essential.
+
+### Normal Plugins
+
+A **normal plugin** is any Claude Code plugin that adds functionality: skills, commands, hooks, rules, MCP servers, LSP servers, or output styles. It can have **any combination** of these elements.
+
+**Detection:** A directory is a plugin if it contains any of:
+`.claude-plugin/plugin.json`, `skills/`, `agents/`, `commands/`, `hooks/`, `rules/`, `.mcp.json`, `.lsp.json`, `output-styles/`
+
+**Scope:** Installed with `--scope user` (all agents) or `--scope local` (one agent's project).
+
+**Examples:** grepika, rechecker-plugin, claude-plugins-validation, llm-externalizer
+
+### Role Plugins
+
+A **role plugin** is a specialized normal plugin that defines an agent's **job specialization** (its Role). It bundles the persona, skills, hooks, rules, and configurations needed for a specific role like "architect" or "programmer".
+
+**Role plugins are normal plugins with extra structure.** They must pass the **quad-match rule** (all 4 required):
+
+| # | Rule | Example |
+|---|------|---------|
+| 1 | `plugin.json` name matches plugin directory name | `"name": "architect-agent"` |
+| 2 | `<plugin-name>.agent.toml` exists at plugin root | `architect-agent.agent.toml` |
+| 3 | `[agent].name` in TOML matches plugin name | `name = "architect-agent"` |
+| 4 | `agents/<plugin-name>-main-agent.md` exists | `agents/architect-agent-main-agent.md` |
+
+**Scope:** Always installed with `--scope local` in the agent's project directory.
+
+**Key differences from normal plugins:**
+
+| Aspect | Normal Plugin | Role Plugin |
+|--------|--------------|-------------|
+| Purpose | Add features (MCP, skills, hooks, etc.) | Define agent job specialization |
+| Scope | User or local | Always local |
+| Per agent | Multiple allowed | One at a time |
+| Has .agent.toml | No | Yes (required) |
+| Has main agent .md | Optional | Required |
+| Switching | Install/uninstall freely | Uninstall old, install new, restart |
+| Created by | Anyone | Haephestos or manually |
+| Stored in | Any marketplace | `~/agents/role-plugins/` marketplace |
+
+**An agent can have one role plugin AND many normal plugins simultaneously.** The role plugin defines what the agent IS; normal plugins add what the agent CAN DO.
+
+---
+
 ### 16. List agent's installed plugins
 
 See all Claude Code plugins installed for an agent.
