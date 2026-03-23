@@ -205,11 +205,19 @@ validate_cache_path() {
     local path="$1"
     local cache_base="$2"
 
-    # Resolve both paths to absolute, handling missing paths with -m
-    local resolved
-    resolved=$(realpath -m "$path" 2>/dev/null) || return 1
-    local cache_resolved
-    cache_resolved=$(realpath -m "$cache_base" 2>/dev/null) || return 1
+    # Resolve both paths to absolute, handling missing paths
+    # realpath -m is GNU-only; fall back to Python or manual resolution on macOS
+    local resolved cache_resolved
+    if command -v realpath >/dev/null 2>&1 && realpath -m / >/dev/null 2>&1; then
+        resolved=$(realpath -m "$path" 2>/dev/null) || return 1
+        cache_resolved=$(realpath -m "$cache_base" 2>/dev/null) || return 1
+    elif command -v python3 >/dev/null 2>&1; then
+        resolved=$(python3 -c "import os,sys; print(os.path.normpath(os.path.join(os.getcwd(), sys.argv[1])))" "$path") || return 1
+        cache_resolved=$(python3 -c "import os,sys; print(os.path.normpath(os.path.join(os.getcwd(), sys.argv[1])))" "$cache_base") || return 1
+    else
+        resolved=$(cd -P -- "$(dirname "$path")" 2>/dev/null && pwd)/$(basename -- "$path") || return 1
+        cache_resolved=$(cd -P -- "$(dirname "$cache_base")" 2>/dev/null && pwd)/$(basename -- "$cache_base") || return 1
+    fi
 
     # Verify resolved path starts with cache base (is contained within)
     [[ "$resolved" == "$cache_resolved"/* ]] || return 1
@@ -256,7 +264,7 @@ check_no_symlinks_in_path() {
 sanitize_for_display() {
     local input="$1"
     # Remove ANSI escape sequences and control characters
-    printf '%s' "$input" | tr -cd '[:print:][:space:]' | sed 's/\x1b\[[0-9;]*m//g'
+    printf '%s' "$input" | tr -cd '[:print:][:space:]' | sed $'s/\x1b\\[[0-9;]*m//g'
 }
 
 # ============================================================================

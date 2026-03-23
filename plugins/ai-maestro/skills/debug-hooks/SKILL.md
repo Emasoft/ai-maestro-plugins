@@ -96,7 +96,7 @@ ls -la /path/to/my-hook.sh
 
 # Check it's executable
 file /path/to/my-hook.sh
-stat -f '%Sp' /path/to/my-hook.sh
+ls -la /path/to/my-hook.sh | awk '{print $1}'
 
 # Fix if not executable
 chmod +x /path/to/my-hook.sh
