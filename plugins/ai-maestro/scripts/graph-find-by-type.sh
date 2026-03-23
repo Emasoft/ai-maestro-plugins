@@ -12,30 +12,50 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/graph-helper.sh"
 
 show_help() {
-    echo "Usage: graph-find-by-type.sh <type>"
-    echo ""
-    echo "Find all components of a given type in the codebase."
-    echo ""
-    echo "Common types:"
-    echo "  model       - Database models (ActiveRecord, ORM)"
-    echo "  serializer  - JSON serializers"
-    echo "  controller  - API/web controllers"
-    echo "  service     - Service objects"
-    echo "  job         - Background jobs"
-    echo "  mailer      - Email senders"
-    echo "  concern     - Shared modules/mixins"
-    echo "  component   - React/Vue components"
-    echo "  hook        - React hooks"
-    echo ""
-    echo "Examples:"
-    echo "  graph-find-by-type.sh model       # List all models"
-    echo "  graph-find-by-type.sh serializer  # List all serializers"
-    echo "  graph-find-by-type.sh controller  # List all controllers"
+  cat <<'HELP'
+Usage: graph-find-by-type.sh <type>
+
+Find all components of a given type in the code graph database.
+
+Commands:
+  graph-find-by-type.sh <type>    List all symbols matching a component type
+
+Arguments:
+  <type>    Component type to search for (case-sensitive)
+
+            Common types:
+              model       - Database models (ActiveRecord, ORM)
+              serializer  - JSON serializers
+              controller  - API/web controllers
+              service     - Service objects
+              job         - Background jobs
+              mailer      - Email senders
+              concern     - Shared modules/mixins
+              component   - React/Vue components
+              hook        - React hooks
+
+Options:
+  --help, -h    Show this help
+
+Use Cases:
+  List all models in the project:        graph-find-by-type.sh model
+  Audit all serializers:                 graph-find-by-type.sh serializer
+  Find all controllers for API review:   graph-find-by-type.sh controller
+  Discover all background jobs:          graph-find-by-type.sh job
+
+Examples:
+  graph-find-by-type.sh model
+  graph-find-by-type.sh serializer
+  graph-find-by-type.sh controller
+  graph-find-by-type.sh service
+HELP
+  exit 0
 }
+
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help
 
 if [ -z "$1" ]; then
     show_help
-    exit 1
 fi
 
 TYPE="$1"

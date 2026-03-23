@@ -10,16 +10,39 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/graph-helper.sh"
 
+show_help() {
+  cat <<'HELP'
+Usage: graph-find-related.sh <component-name>
+
+Find all components related to a given component (extends, includes, associations, serializers).
+
+Commands:
+  graph-find-related.sh <name>    Show all relationship types for <name>
+
+Arguments:
+  <component-name>    Name of the class, model, or service to inspect (case-sensitive)
+
+Options:
+  --help, -h    Show this help
+
+Use Cases:
+  Map all dependencies of a model before migration:  graph-find-related.sh User
+  Discover what a service connects to:                graph-find-related.sh PaymentService
+  Find inheritance and mixin chains:                  graph-find-related.sh BaseController
+  Audit a component's full relationship graph:        graph-find-related.sh Order
+
+Examples:
+  graph-find-related.sh User
+  graph-find-related.sh PaymentService
+  graph-find-related.sh ApplicationRecord
+HELP
+  exit 0
+}
+
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help
+
 if [ -z "$1" ]; then
-    echo "Usage: graph-find-related.sh <component-name>"
-    echo ""
-    echo "Find all components related to a given component."
-    echo "Shows: extends, includes, associations, serializers."
-    echo ""
-    echo "Examples:"
-    echo "  graph-find-related.sh User            # Find everything related to User"
-    echo "  graph-find-related.sh PaymentService  # Find PaymentService relationships"
-    exit 1
+    show_help
 fi
 
 NAME="$1"

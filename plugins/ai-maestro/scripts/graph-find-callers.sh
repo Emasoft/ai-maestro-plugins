@@ -10,16 +10,38 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/graph-helper.sh"
 
+show_help() {
+  cat <<'HELP'
+Usage: graph-find-callers.sh <function-name>
+
+Find all functions that call a given function (incoming call edges).
+
+Commands:
+  graph-find-callers.sh <name>    List all functions that call <name>
+
+Arguments:
+  <function-name>    Name of the function to inspect (case-sensitive)
+
+Options:
+  --help, -h    Show this help
+
+Use Cases:
+  Impact analysis before modifying a function:  graph-find-callers.sh authenticate
+  Find all entry points into a function:        graph-find-callers.sh process_payment
+  Check if a function is unused (dead code):    graph-find-callers.sh legacy_handler
+
+Examples:
+  graph-find-callers.sh authenticate
+  graph-find-callers.sh process_payment
+  graph-find-callers.sh validate_token
+HELP
+  exit 0
+}
+
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help
+
 if [ -z "$1" ]; then
-    echo "Usage: graph-find-callers.sh <function-name>"
-    echo ""
-    echo "Find all functions that call a given function."
-    echo "Use this BEFORE modifying a function to understand impact."
-    echo ""
-    echo "Examples:"
-    echo "  graph-find-callers.sh authenticate    # Who calls authenticate?"
-    echo "  graph-find-callers.sh process_payment # Who calls process_payment?"
-    exit 1
+    show_help
 fi
 
 NAME="$1"

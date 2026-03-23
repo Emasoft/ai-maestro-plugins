@@ -4,6 +4,35 @@
 
 set -e
 
+# Show help
+show_help() {
+    echo "Usage: docs-stats.sh"
+    echo ""
+    echo "Display statistics for an agent's documentation index."
+    echo ""
+    echo "Queries the AI Maestro docs subsystem and returns index metrics"
+    echo "such as document count, total size, and indexing status for the"
+    echo "current agent (auto-detected from the active tmux session)."
+    echo ""
+    echo "Options:"
+    echo "  --help, -h    Show this help"
+    echo ""
+    echo "Use Cases:"
+    echo "  Check index health     Verify docs are indexed and up to date"
+    echo "  Monitor doc coverage   See how many documents are tracked"
+    echo "  Debug search issues    Confirm the index has expected entries"
+    echo ""
+    echo "Examples:"
+    echo "  docs-stats.sh          # Show stats for current agent"
+    echo ""
+    echo "Environment Variables:"
+    echo "  AIMAESTRO_API   API endpoint (auto-detected from running instance)"
+    echo "  SESSION_NAME    Override auto-detected tmux session name"
+}
+
+# Handle --help flag early
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help && exit 0
+
 # Source docs helpers
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/docs-helper.sh"

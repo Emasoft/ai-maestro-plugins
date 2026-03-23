@@ -373,7 +373,9 @@ is_marketplace_installed() {
     [[ -n "$output" ]]
 }
 
-# Restart an agent by hibernate + wake with verification
+# Gracefully restart Claude Code inside the SAME tmux session.
+# Sends /exit, waits, then starts claude again with the agent's stored programArgs.
+# This PRESERVES the tmux session, scrollback history, and chat history.
 # Args: agent_id, [wait_seconds]
 # Returns: 0 on success, 1 on failure
 restart_agent() {
@@ -388,39 +390,53 @@ restart_agent() {
         return 1
     fi
 
-    print_info "Restarting agent to apply changes..."
+    print_info "Restarting Claude Code (preserving tmux session and history)..."
 
-    # Hibernate
-    local response
-    response=$(curl -s --max-time 30 -X POST "${api_base}/api/agents/${agent_id}/hibernate")
-    local error
-    error=$(echo "$response" | jq -r '.error // empty' 2>/dev/null)
-    if [[ -n "$error" ]]; then
-        print_warning "Hibernate warning: $error"
+    # Get the agent's session name and programArgs from registry
+    local agent_json
+    agent_json=$(curl -s --max-time 10 "${api_base}/api/agents/${agent_id}")
+    local session_name
+    session_name=$(echo "$agent_json" | jq -r '.agent.session.tmuxSessionName // .agent.name // .agent.alias // empty' 2>/dev/null)
+    local program_args
+    program_args=$(echo "$agent_json" | jq -r '.agent.programArgs // empty' 2>/dev/null)
+
+    if [[ -z "$session_name" ]]; then
+        print_warning "No active tmux session found — agent may be offline"
+        return 0
     fi
 
-    # Wait for session to fully terminate
+    # 1. Send /exit to Claude Code (graceful shutdown — keeps tmux alive)
+    local payload
+    payload=$(jq -n --arg cmd "/exit" '{"command": $cmd, "requireIdle": false}')
+    curl -s --max-time 10 -X POST "${api_base}/api/sessions/${session_name}/command" \
+        -H "Content-Type: application/json" \
+        -d "$payload" >/dev/null 2>&1
+
+    # 2. Wait for Claude Code to exit
     sleep "$wait_secs"
 
-    # Wake
-    response=$(curl -s --max-time 30 -X POST "${api_base}/api/agents/${agent_id}/wake")
-    error=$(echo "$response" | jq -r '.error // empty' 2>/dev/null)
-    if [[ -n "$error" ]]; then
-        print_error "Wake failed: $error"
-        return 1
+    # 3. Start Claude Code again in the same tmux session
+    local start_cmd="claude"
+    if [[ -n "$program_args" ]]; then
+        start_cmd="claude $program_args"
     fi
+    payload=$(jq -n --arg cmd "$start_cmd" '{"command": $cmd, "requireIdle": false}')
+    curl -s --max-time 10 -X POST "${api_base}/api/sessions/${session_name}/command" \
+        -H "Content-Type: application/json" \
+        -d "$payload" >/dev/null 2>&1
 
-    # Verify agent is back online
-    sleep 2
+    # 4. Verify agent comes back online
+    sleep 3
+    local response
     response=$(curl -s --max-time 10 "${api_base}/api/agents/${agent_id}")
     local status
-    status=$(echo "$response" | jq -r '.agent.status // "unknown"' 2>/dev/null)
+    status=$(echo "$response" | jq -r '.agent.session.status // "unknown"' 2>/dev/null)
 
     if [[ "$status" == "online" ]]; then
-        print_success "Agent restarted successfully"
+        print_success "Agent restarted successfully (session preserved)"
         return 0
     else
-        print_warning "Agent status: $status (may need manual verification)"
+        print_warning "Agent status: $status (may need a moment to reconnect)"
         return 0  # Don't fail - agent might still be starting
     fi
 }

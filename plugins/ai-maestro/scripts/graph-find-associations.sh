@@ -10,16 +10,38 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/graph-helper.sh"
 
+show_help() {
+  cat <<'HELP'
+Usage: graph-find-associations.sh <model-name>
+
+Find all associations (belongs_to, has_many, has_one, etc.) for a model.
+
+Commands:
+  graph-find-associations.sh <name>    Query outgoing and incoming associations for a model
+
+Arguments:
+  <model-name>    Name of the model to inspect (case-sensitive)
+
+Options:
+  --help, -h    Show this help
+
+Use Cases:
+  Map a model's relationships before refactoring:  graph-find-associations.sh User
+  Find all models linked to a given model:         graph-find-associations.sh Post
+  Audit foreign key dependencies:                  graph-find-associations.sh Order
+
+Examples:
+  graph-find-associations.sh User
+  graph-find-associations.sh Post
+  graph-find-associations.sh Comment
+HELP
+  exit 0
+}
+
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help
+
 if [ -z "$1" ]; then
-    echo "Usage: graph-find-associations.sh <model-name>"
-    echo ""
-    echo "Find all associations for a model (belongs_to, has_many, etc.)."
-    echo "Shows both outgoing and incoming associations."
-    echo ""
-    echo "Examples:"
-    echo "  graph-find-associations.sh User  # Find User associations"
-    echo "  graph-find-associations.sh Post  # Find Post associations"
-    exit 1
+    show_help
 fi
 
 NAME="$1"

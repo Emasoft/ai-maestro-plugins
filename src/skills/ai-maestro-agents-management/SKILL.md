@@ -18,6 +18,21 @@ Manage AI agents through the AI Maestro CLI. This skill provides commands for cr
 
 **This skill is for managing other agents**, not for inter-agent communication (use `agent-messaging` skill for that).
 
+## CRITICAL: Session & Data Preservation Rules
+
+**NEVER destroy a tmux session or chat history for configuration changes.** The following operations MUST preserve the tmux session and scrollback:
+- Installing/uninstalling/switching plugins → graceful restart (send `/exit`, then restart `claude` in same session)
+- Updating agent settings (programArgs, model, tags, etc.) → no restart needed
+- Changing role plugin → uninstall old + install new + graceful restart
+- Renaming agent → tmux rename-session (preserves session)
+- Restart command → graceful `/exit` + re-launch (same session)
+
+**Only these operations may destroy the tmux session:**
+- `hibernate` — intentionally puts agent offline (session killed, data preserved, wake creates new session)
+- `delete --confirm` — hard delete (session killed, data backed up then removed)
+
+**NEVER use hibernate+wake as a substitute for restart.** Hibernate kills the tmux session and all chat history. Use the graceful restart path instead.
+
 ## CLI Script
 
 **Script:** `aimaestro-agent.sh` (Bash, macOS/Linux)

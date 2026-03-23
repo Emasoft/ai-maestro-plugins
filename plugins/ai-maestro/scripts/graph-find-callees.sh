@@ -10,16 +10,38 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/graph-helper.sh"
 
+show_help() {
+  cat <<'HELP'
+Usage: graph-find-callees.sh <function-name>
+
+Find all functions called by a given function (outgoing call edges).
+
+Commands:
+  graph-find-callees.sh <name>    List all functions that <name> calls
+
+Arguments:
+  <function-name>    Name of the function to inspect (case-sensitive)
+
+Options:
+  --help, -h    Show this help
+
+Use Cases:
+  Understand a function's dependencies:          graph-find-callees.sh process_payment
+  Map the downstream call tree of a handler:     graph-find-callees.sh handle_request
+  Check what a function touches before editing:  graph-find-callees.sh validate_input
+
+Examples:
+  graph-find-callees.sh process_payment
+  graph-find-callees.sh handle_request
+  graph-find-callees.sh create_order
+HELP
+  exit 0
+}
+
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help
+
 if [ -z "$1" ]; then
-    echo "Usage: graph-find-callees.sh <function-name>"
-    echo ""
-    echo "Find all functions called by a given function."
-    echo "Use this to understand what a function depends on."
-    echo ""
-    echo "Examples:"
-    echo "  graph-find-callees.sh process_payment  # What does process_payment call?"
-    echo "  graph-find-callees.sh handle_request   # What does handle_request call?"
-    exit 1
+    show_help
 fi
 
 NAME="$1"

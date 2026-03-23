@@ -1,270 +1,543 @@
 ---
 name: ai-maestro-agents-management
-description: Creates, manages, and orchestrates AI agents using the AI Maestro CLI. Use when the user asks to "create agent", "list agents", "delete agent", "rename agent", "hibernate agent", "wake agent", "install plugin", "show agent", "export agent", "restart agent", "install marketplace", or any agent lifecycle management task.
+description: Creates, manages, and orchestrates AI agents using the AI Maestro CLI. Use when the user asks to "create agent", "list agents", "delete agent", "rename agent", "hibernate agent", "wake agent", "install plugin", "show agent", "export agent", "restart agent", "install skill", "install marketplace", or any agent lifecycle management task.
 allowed-tools: Bash
 compatibility: Requires AI Maestro (aimaestro.dev) with Bash shell access
 metadata:
   author: 23blocks
-  version: 2.0.0
+  version: 3.0.0
 ---
 
 # AI Maestro Agent Management
 
-## Purpose
+Manage AI agents through the `aimaestro-agent.sh` CLI and the AI Maestro REST API.
 
-Manage AI agents through the AI Maestro CLI. This skill provides commands for creating, updating, deleting, hibernating, and waking agents. It also handles plugin management and agent import/export.
+This skill covers the full agent lifecycle: creation, configuration, hibernation, plugin/skill management, and import/export. For inter-agent messaging, use the `agent-messaging` skill instead.
 
-## CRITICAL: This is an Agent Management Skill
+## Session and Data Preservation (CRITICAL)
 
-**This skill is for managing other agents**, not for inter-agent communication (use `agent-messaging` skill for that).
+**NEVER destroy a tmux session or chat history for configuration changes.**
 
-## CLI Script
+| Operation | Session Impact | Use Instead |
+|-----------|---------------|-------------|
+| Install/uninstall/switch plugin | Graceful restart (send `/exit`, re-launch `claude` in same session) | NEVER hibernate+wake |
+| Update settings (task, model, tags, args) | No restart needed | Direct API/CLI update |
+| Change role plugin | Uninstall old, install new, graceful restart | NEVER hibernate+wake |
+| Rename agent | `tmux rename-session` (preserves session) | NEVER delete+recreate |
 
-**Script:** `aimaestro-agent.sh` (Bash, macOS/Linux)
+**Only `hibernate` and `delete --confirm` may destroy the tmux session.** Hibernate is intentional offline (session killed, data preserved). Delete is permanent removal (backup created first).
 
-**Installation:** `./install-agent-cli.sh`
+## Quick Reference
 
-**Requirements:** macOS or Linux, Bash 4.0+, tmux 3.0+, jq, curl
+| CLI Command | API Equivalent |
+|-------------|----------------|
+| `aimaestro-agent.sh list` | `GET /api/agents` |
+| `aimaestro-agent.sh show <agent>` | `GET /api/agents/{id}` |
+| `aimaestro-agent.sh create <name> --dir <path>` | `POST /api/agents` |
+| `aimaestro-agent.sh update <agent> [opts]` | `PATCH /api/agents/{id}` |
+| `aimaestro-agent.sh delete <agent> --confirm` | `DELETE /api/agents/{id}` |
+| `aimaestro-agent.sh rename <old> <new>` | `PATCH /api/agents/{id}` with `name` field |
+| `aimaestro-agent.sh hibernate <agent>` | `POST /api/agents/{id}/hibernate` |
+| `aimaestro-agent.sh wake <agent>` | `POST /api/agents/{id}/wake` |
+| `aimaestro-agent.sh export <agent>` | `GET /api/agents/{id}/export` |
+| `aimaestro-agent.sh import <file>` | `POST /api/agents/import` |
+| `aimaestro-agent.sh plugin list <agent>` | `GET /api/agents/{id}/local-plugins` |
+| `aimaestro-agent.sh skill list <agent>` | `GET /api/agents/{id}/skills` |
 
 ---
 
-## PART 1: AGENT LIFECYCLE
+## USE CASES
 
-### 1. List Agents
+### 1. List all online agents
 
-```bash
-aimaestro-agent.sh list [--status online|offline|hibernated|all] [--format table|json|names] [-q|--quiet] [--json]
-```
-
-Examples: `list`, `list --status online`, `list --format json`, `list -q`
-
-### 2. Show Agent Details
+See which agents are currently running.
 
 ```bash
-aimaestro-agent.sh show <agent> [--format pretty|json]
+aimaestro-agent.sh list --status online
 ```
 
-### 3. Create Agent
+Other status filters: `offline`, `hibernated`, `all` (default).
 
-**`--dir` is required.**
+Output formats: `--format table` (default), `--format json`, `--format names`, `--json`, `-q` (quiet, names only).
 
+**API:**
 ```bash
-aimaestro-agent.sh create <name> --dir <path> [options] [-- <program-args>...]
+curl http://localhost:23000/api/agents
 ```
 
-Options: `-p/--program`, `-m/--model`, `-t/--task`, `--tags`, `--no-session`, `--no-folder`, `--force-folder`
+---
 
-Examples:
+### 2. Create a new agent with a working directory
+
+Provision a new agent and start its tmux session.
+
 ```bash
 aimaestro-agent.sh create my-api --dir /Users/dev/projects/my-api
+```
+
+With a task description and tags:
+```bash
 aimaestro-agent.sh create backend-service \
   --dir /Users/dev/projects/backend \
   --task "Implement user authentication with JWT" \
   --tags "api,auth,security"
+```
+
+With extra program arguments passed to `claude`:
+```bash
 aimaestro-agent.sh create debug-agent --dir /Users/dev/projects/debug -- --verbose --debug
 ```
 
-### 4. Update Agent
+**`--dir` is required.** Additional options: `-p/--program`, `-m/--model`, `--no-session`, `--no-folder`, `--force-folder`.
 
+**API:**
 ```bash
-aimaestro-agent.sh update <agent> [options]
+curl -X POST http://localhost:23000/api/agents \
+  -H "Content-Type: application/json" \
+  -d '{"name":"my-api","workingDirectory":"/Users/dev/projects/my-api"}'
 ```
 
-Options: `-t/--task`, `-m/--model`, `--tags`, `--add-tag`, `--remove-tag`, `--args`
+---
 
-Examples:
+### 3. Show agent details (persona, title, role, sessions)
+
+Inspect a specific agent's full configuration.
+
 ```bash
+aimaestro-agent.sh show my-api
+```
+
+JSON output: `--format json`.
+
+Shows: agent ID, persona name (label), title (governance level), role (plugin specialization), working directory, model, tags, task, session status, installed plugins, and skills.
+
+**API:**
+```bash
+curl http://localhost:23000/api/agents/{id}
+```
+
+---
+
+### 4. Update agent properties (task, model, tags, args)
+
+Change an agent's task, model, tags, or program arguments without restarting.
+
+```bash
+# Update task description
 aimaestro-agent.sh update backend-api --task "Focus on payment integration"
+
+# Add a tag
 aimaestro-agent.sh update backend-api --add-tag "critical"
+
+# Replace all tags
+aimaestro-agent.sh update backend-api --tags "api,payments,v2"
+
+# Remove a tag
+aimaestro-agent.sh update backend-api --remove-tag "deprecated"
+
+# Update program arguments
 aimaestro-agent.sh update backend-api --args "--continue --chrome"
+
+# Update AI model
+aimaestro-agent.sh update backend-api --model opus
 ```
 
-### 5. Delete Agent
+Options: `-t/--task`, `-m/--model`, `--tags`, `--add-tag`, `--remove-tag`, `--args`.
 
-**Destructive operation.** Requires `--confirm`.
-
+**API (supports additional fields: label, name, workingDirectory, avatar, role, team):**
 ```bash
-aimaestro-agent.sh delete <agent> --confirm [--keep-folder] [--keep-data]
-```
-
-### 6. Rename Agent
-
-```bash
-aimaestro-agent.sh rename <old-name> <new-name> [--rename-session] [--rename-folder] [-y]
-```
-
-### 7. Hibernate Agent
-
-```bash
-aimaestro-agent.sh hibernate <agent>
-```
-
-### 8. Wake Agent
-
-```bash
-aimaestro-agent.sh wake <agent> [--attach]
-```
-
-### 9. Restart Agent
-
-```bash
-aimaestro-agent.sh restart <agent> [--wait <seconds>]
-```
-
-Hibernates, waits (default 3s), then wakes. Cannot restart the current session.
-
-### 10. Session Management
-
-```bash
-aimaestro-agent.sh session add <agent> [--role <role>]
-aimaestro-agent.sh session remove <agent> [--index <n>] [--all]
-aimaestro-agent.sh session exec <agent> <command...>
+curl -X PATCH http://localhost:23000/api/agents/{id} \
+  -H "Content-Type: application/json" \
+  -d '{"label":"Peter Bot","taskDescription":"Focus on payments"}'
 ```
 
 ---
 
-## PART 2: PLUGIN MANAGEMENT
+### 5. Rename an agent
 
-### 11. Install Plugin
+Change an agent's identity name. Optionally rename the tmux session and agent folder.
 
 ```bash
-aimaestro-agent.sh plugin install <agent> <plugin> [-s|--scope user|project|local] [--no-restart]
+aimaestro-agent.sh rename old-name new-name
 ```
 
-### 12. Uninstall Plugin
-
+With automatic session and folder rename:
 ```bash
-aimaestro-agent.sh plugin uninstall <agent> <plugin> [-s|--scope user|project|local] [--force|-f]
+aimaestro-agent.sh rename old-name new-name --rename-session --rename-folder -y
 ```
 
-### 13. Update Plugin
-
+**API:**
 ```bash
-aimaestro-agent.sh plugin update <agent> <plugin> [-s|--scope user|project|local]
-```
-
-### 14. Load Plugin (Session Only)
-
-```bash
-aimaestro-agent.sh plugin load <agent> <path> [<path>...]
-```
-
-### 15. List Plugins
-
-```bash
-aimaestro-agent.sh plugin list <agent>
-```
-
-### 16. Enable/Disable Plugins
-
-```bash
-aimaestro-agent.sh plugin enable <agent> <plugin> [-s|--scope user|project|local]
-aimaestro-agent.sh plugin disable <agent> <plugin> [-s|--scope user|project|local]
-```
-
-### 17. Validate Plugin
-
-```bash
-aimaestro-agent.sh plugin validate <agent> <plugin-path>
-```
-
-### 18. Reinstall Plugin
-
-```bash
-aimaestro-agent.sh plugin reinstall <agent> <plugin> [-s|--scope user|project|local]
-```
-
-### 19. Clean Plugin Cache
-
-```bash
-aimaestro-agent.sh plugin clean <agent> [--dry-run|-n]
-```
-
-### 20. Plugin Marketplace
-
-```bash
-aimaestro-agent.sh plugin marketplace list <agent>
-aimaestro-agent.sh plugin marketplace add <agent> <source> [--no-restart]
-aimaestro-agent.sh plugin marketplace remove <agent> <name> [--force|-f]
-aimaestro-agent.sh plugin marketplace update <agent> [<name>]
-```
-
-Source formats: `owner/repo`, `github:owner/repo`, HTTPS/SSH Git URLs, `#branch`, local directory, remote URL.
-
-Examples:
-```bash
-aimaestro-agent.sh plugin marketplace add backend-api owner/repo
-aimaestro-agent.sh plugin marketplace add backend-api https://github.com/o/r.git#v1.0.0
-aimaestro-agent.sh plugin marketplace remove backend-api my-marketplace --force
+curl -X PATCH http://localhost:23000/api/agents/{id} \
+  -H "Content-Type: application/json" \
+  -d '{"name":"new-name"}'
 ```
 
 ---
 
-## PART 3: EXPORT/IMPORT
+### 6. Delete an agent
 
-### 21. Export Agent
+Permanently remove an agent. Requires explicit confirmation.
 
 ```bash
-aimaestro-agent.sh export <agent> [-o <output-file>]
+aimaestro-agent.sh delete my-api --confirm
 ```
 
-Default output: `<agent>.agent.json`. Currently exports configuration only.
-
-### 22. Import Agent
-
+Preserve agent folder or data:
 ```bash
-aimaestro-agent.sh import <file> [--name <new-name>] [--dir <new-dir>]
+aimaestro-agent.sh delete my-api --confirm --keep-folder --keep-data
 ```
 
----
-
-## PART 4: SKILL MANAGEMENT
-
-### 23. List Skills (Registry)
-
+**API (soft-delete by default, add `?hard=true` for permanent):**
 ```bash
-aimaestro-agent.sh skill list <agent>
-```
-
-### 24. Add Skill (Registry)
-
-```bash
-aimaestro-agent.sh skill add <agent> <skill-id> [--type marketplace|custom] [--path <path>]
-```
-
-### 25. Remove Skill (Registry)
-
-```bash
-aimaestro-agent.sh skill remove <agent> <skill-id>
-```
-
-### 26. Install Skill (Filesystem)
-
-```bash
-aimaestro-agent.sh skill install <agent> <source> [-s|--scope user|project|local] [--name <name>]
-```
-
-Examples:
-```bash
-aimaestro-agent.sh skill install my-agent ./my-skill.skill
-aimaestro-agent.sh skill install my-agent ./path/to/skill-folder --scope project
-aimaestro-agent.sh skill install backend-api ./debug-skill --scope local
-```
-
-### 27. Uninstall Skill (Filesystem)
-
-```bash
-aimaestro-agent.sh skill uninstall <agent> <skill-name> [-s|--scope user|project|local]
+curl -X DELETE http://localhost:23000/api/agents/{id}
+curl -X DELETE "http://localhost:23000/api/agents/{id}?hard=true"
 ```
 
 ---
 
-## Error Handling
+### 7. Hibernate an agent
 
-**Agent not found:** `aimaestro-agent.sh list` to see available agents.
+Suspend an agent by killing its tmux session. Agent data (registry, memory, plugins) is preserved. The agent can be woken later.
 
-**Script not found:** Check `which aimaestro-agent.sh` and verify `~/.local/bin` is in PATH.
+```bash
+aimaestro-agent.sh hibernate my-api
+```
 
-**API not running:** `curl http://localhost:23000/api/hosts/identity` — start AI Maestro if down.
+**API:**
+```bash
+curl -X POST http://localhost:23000/api/agents/{id}/hibernate
+```
 
-For detailed output formats, scenarios, troubleshooting, error table, and architecture, see [references/REFERENCE.md](./references/REFERENCE.md).
+---
+
+### 8. Wake an agent and optionally attach to it
+
+Restore a hibernated agent by creating a new tmux session and launching `claude`.
+
+```bash
+aimaestro-agent.sh wake my-api
+```
+
+Wake and immediately attach to the tmux session:
+```bash
+aimaestro-agent.sh wake my-api --attach
+```
+
+**API:**
+```bash
+curl -X POST http://localhost:23000/api/agents/{id}/wake
+```
+
+---
+
+### 9. Restart an agent (graceful)
+
+Hibernate then immediately wake. Useful when configuration changes require a session restart.
+
+```bash
+aimaestro-agent.sh restart my-api
+```
+
+With custom wait time between hibernate and wake:
+```bash
+aimaestro-agent.sh restart my-api --wait 5
+```
+
+Default wait: 3 seconds. Cannot restart the session you are currently attached to.
+
+---
+
+### 10. Export an agent to a file
+
+Create a portable agent export containing configuration, metadata, and settings.
+
+```bash
+aimaestro-agent.sh export my-api
+```
+
+Custom output path:
+```bash
+aimaestro-agent.sh export my-api -o /tmp/my-api-backup.agent.json
+```
+
+Default output: `<agent>.agent.json` in the current directory.
+
+**API:**
+```bash
+curl http://localhost:23000/api/agents/{id}/export -o agent-backup.json
+```
+
+---
+
+### 11. Import an agent from a file
+
+Restore an agent from a previously exported file.
+
+```bash
+aimaestro-agent.sh import my-api.agent.json
+```
+
+Override name or directory during import:
+```bash
+aimaestro-agent.sh import backup.agent.json --name new-agent --dir /Users/dev/projects/new
+```
+
+**API:**
+```bash
+curl -X POST http://localhost:23000/api/agents/import \
+  -H "Content-Type: application/json" \
+  -d @agent-backup.json
+```
+
+---
+
+### 12. List agent's installed skills
+
+See all skills registered for an agent.
+
+```bash
+aimaestro-agent.sh skill list my-api
+```
+
+**API:**
+```bash
+curl http://localhost:23000/api/agents/{id}/skills
+```
+
+---
+
+### 13. Install a skill on an agent
+
+Add a skill from a file or directory.
+
+```bash
+# Install from a .skill file
+aimaestro-agent.sh skill install my-api ./my-skill.skill
+
+# Install from a directory with project scope
+aimaestro-agent.sh skill install my-api ./path/to/skill-folder --scope project
+
+# Install with a custom name
+aimaestro-agent.sh skill install my-api ./debug-skill --scope local --name debug-helper
+```
+
+Scopes: `user` (default, `~/.claude/skills/`), `project` (`.claude/skills/`), `local` (project-local).
+
+---
+
+### 14. Uninstall a skill from an agent
+
+Remove a skill by name.
+
+```bash
+aimaestro-agent.sh skill uninstall my-api debug-helper
+```
+
+With explicit scope:
+```bash
+aimaestro-agent.sh skill uninstall my-api debug-helper --scope project
+```
+
+---
+
+### 15. Add/remove skills in agent registry
+
+Manage the agent's skill registry (metadata tracking) without filesystem changes.
+
+```bash
+# Add a skill to the registry
+aimaestro-agent.sh skill add my-api custom-skill --type custom --path /path/to/skill
+
+# Remove from registry
+aimaestro-agent.sh skill remove my-api custom-skill
+```
+
+---
+
+### 16. List agent's installed plugins
+
+See all Claude Code plugins installed for an agent.
+
+```bash
+aimaestro-agent.sh plugin list my-api
+```
+
+**API:**
+```bash
+curl http://localhost:23000/api/agents/{id}/local-plugins
+```
+
+---
+
+### 17. Install a plugin on an agent
+
+Install a Claude Code plugin. Triggers a graceful restart by default.
+
+```bash
+aimaestro-agent.sh plugin install my-api my-plugin
+```
+
+With scope and no restart:
+```bash
+aimaestro-agent.sh plugin install my-api my-plugin --scope local --no-restart
+```
+
+Scopes: `user` (default), `project`, `local`.
+
+---
+
+### 18. Uninstall a plugin from an agent
+
+Remove a Claude Code plugin.
+
+```bash
+aimaestro-agent.sh plugin uninstall my-api my-plugin
+```
+
+Force uninstall (skip confirmation):
+```bash
+aimaestro-agent.sh plugin uninstall my-api my-plugin --force
+```
+
+---
+
+### 19. Enable or disable a plugin
+
+Toggle a plugin on or off without uninstalling it.
+
+```bash
+aimaestro-agent.sh plugin enable my-api my-plugin
+aimaestro-agent.sh plugin disable my-api my-plugin
+```
+
+With explicit scope:
+```bash
+aimaestro-agent.sh plugin enable my-api my-plugin --scope local
+```
+
+---
+
+### 20. Update, reload, validate, or clean plugins
+
+```bash
+# Update a plugin to the latest version
+aimaestro-agent.sh plugin update my-api my-plugin
+
+# Reinstall a plugin (uninstall + install)
+aimaestro-agent.sh plugin reinstall my-api my-plugin
+
+# Load a plugin for the current session only (not persisted)
+aimaestro-agent.sh plugin load my-api /path/to/plugin
+
+# Validate a plugin's structure
+aimaestro-agent.sh plugin validate my-api /path/to/plugin
+
+# Clean stale plugin cache
+aimaestro-agent.sh plugin clean my-api
+aimaestro-agent.sh plugin clean my-api --dry-run
+```
+
+---
+
+### 21. Manage plugin marketplaces
+
+Add, remove, list, or update plugin marketplace sources.
+
+```bash
+# List marketplaces for an agent
+aimaestro-agent.sh plugin marketplace list my-api
+
+# Add a marketplace from a GitHub repo
+aimaestro-agent.sh plugin marketplace add my-api owner/repo
+
+# Add from a specific branch or tag
+aimaestro-agent.sh plugin marketplace add my-api https://github.com/o/r.git#v1.0.0
+
+# Remove a marketplace
+aimaestro-agent.sh plugin marketplace remove my-api my-marketplace --force
+
+# Update all or a specific marketplace
+aimaestro-agent.sh plugin marketplace update my-api
+aimaestro-agent.sh plugin marketplace update my-api my-marketplace
+```
+
+Source formats: `owner/repo`, `github:owner/repo`, HTTPS/SSH Git URLs, `#branch`, local directory paths.
+
+---
+
+### 22. Manage agent sessions
+
+Interact with the agent's tmux session directly.
+
+```bash
+# Add a new session window
+aimaestro-agent.sh session add my-api
+
+# Remove a session window
+aimaestro-agent.sh session remove my-api --index 1
+
+# Remove all session windows
+aimaestro-agent.sh session remove my-api --all
+
+# Execute a command in the agent's session
+aimaestro-agent.sh session exec my-api "git status"
+```
+
+To attach to an agent's tmux session from your terminal:
+```bash
+tmux attach-session -t my-api
+```
+
+---
+
+### 23. Troubleshooting: agent not responding
+
+**Agent not found in list:**
+```bash
+aimaestro-agent.sh list                      # See all registered agents
+tmux list-sessions                           # Check tmux sessions directly
+```
+
+**CLI script not found:**
+```bash
+which aimaestro-agent.sh                     # Should be in ~/.local/bin
+echo $PATH | tr ':' '\n' | grep local       # Verify ~/.local/bin is in PATH
+```
+
+**AI Maestro API not running:**
+```bash
+curl http://localhost:23000/api/hosts/identity   # Check API health
+pm2 status ai-maestro                            # Check PM2 process
+pm2 restart ai-maestro                           # Restart if needed
+```
+
+**Agent stuck or unresponsive:**
+```bash
+aimaestro-agent.sh restart my-api            # Graceful restart
+```
+
+**Plugin not loading after install:**
+```bash
+aimaestro-agent.sh plugin list my-api        # Verify plugin appears
+aimaestro-agent.sh plugin validate my-api /path/to/plugin   # Check plugin structure
+aimaestro-agent.sh restart my-api            # Restart to reload plugins
+```
+
+---
+
+## Requirements
+
+- macOS or Linux
+- Bash 4.0+
+- tmux 3.0+
+- jq
+- curl
+- AI Maestro running on `http://localhost:23000`
+
+**Installation:**
+```bash
+./install-agent-cli.sh
+```
+
+For detailed output formats, error codes, and architecture, see [references/REFERENCE.md](./references/REFERENCE.md).

@@ -29,30 +29,47 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Show usage
-show_usage() {
+# Show help
+show_help() {
     echo "Usage: export-agent.sh <agent-alias-or-id> [output-dir]"
     echo ""
     echo "Export an AI Maestro agent to a portable ZIP file."
+    echo ""
+    echo "The export includes agent configuration, database, messages, and"
+    echo "metadata in a self-contained ZIP archive with a manifest.json."
     echo ""
     echo "Arguments:"
     echo "  agent-alias-or-id  The agent's alias (e.g., 'backend-api') or UUID"
     echo "  output-dir         Directory to save the ZIP file (default: current directory)"
     echo ""
+    echo "Options:"
+    echo "  --help, -h         Show this help"
+    echo ""
+    echo "Use Cases:"
+    echo "  Migrate agent      Move an agent from one host to another"
+    echo "  Backup agent       Create a snapshot of agent state for safekeeping"
+    echo "  Share agent        Send an agent config to a colleague for import"
+    echo ""
     echo "Examples:"
-    echo "  export-agent.sh backend-api"
-    echo "  export-agent.sh backend-api ~/exports"
-    echo "  export-agent.sh 633f6cdc-4404-431a-a95c-80f66a520401"
+    echo "  export-agent.sh backend-api              # Export to current directory"
+    echo "  export-agent.sh backend-api ~/exports    # Export to ~/exports/"
+    echo "  export-agent.sh 633f6cdc-4404-431a...    # Export by UUID"
     echo ""
     echo "Environment Variables:"
     echo "  AIMAESTRO_API  API endpoint (auto-detected from running instance)"
+    echo ""
+    echo "To import the exported agent on another machine:"
+    echo "  import-agent.sh <exported-file.zip>"
 }
+
+# Handle --help flag early
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help && exit 0
 
 # Check arguments
 if [ -z "$1" ]; then
     echo -e "${RED}Error: Agent alias or ID is required${NC}"
     echo ""
-    show_usage
+    show_help
     exit 1
 fi
 

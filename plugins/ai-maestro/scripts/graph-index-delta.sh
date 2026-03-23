@@ -10,6 +10,42 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/graph-helper.sh"
 
+show_help() {
+  cat <<'HELP'
+Usage: graph-index-delta.sh [project-path]
+
+Incrementally index the code graph, processing only changed files since last index.
+
+Commands:
+  graph-index-delta.sh                 Index the current project (delta mode)
+  graph-index-delta.sh <path>          Index a specific project directory
+
+Arguments:
+  [project-path]    Optional path to the project to index (defaults to current project)
+
+Options:
+  --help, -h    Show this help
+
+Use Cases:
+  Update the graph after making code changes:         graph-index-delta.sh
+  Index a specific project for the first time:        graph-index-delta.sh /path/to/project
+  Re-sync the graph after pulling new commits:        graph-index-delta.sh
+  Keep the graph current during active development:   graph-index-delta.sh
+
+Notes:
+  First run performs a full index. Subsequent runs only process new, modified,
+  and deleted files (delta mode) for faster indexing.
+
+Examples:
+  graph-index-delta.sh
+  graph-index-delta.sh /Users/dev/my-rails-app
+  graph-index-delta.sh ~/projects/api-server
+HELP
+  exit 0
+}
+
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help
+
 # Initialize (gets SESSION and AGENT_ID)
 init_graph || exit 1
 

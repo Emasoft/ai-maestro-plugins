@@ -11,16 +11,39 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/graph-helper.sh"
 
+show_help() {
+  cat <<'HELP'
+Usage: graph-describe.sh <component-name>
+
+Describe a code symbol (class, function, module, service) and show its relationships.
+
+Commands:
+  graph-describe.sh <name>    Look up a symbol by name in the code graph database
+
+Arguments:
+  <component-name>    Name of the class, function, model, or service to describe (case-sensitive)
+
+Options:
+  --help, -h    Show this help
+
+Use Cases:
+  Inspect a model before modifying it:       graph-describe.sh User
+  Understand a service's relationships:      graph-describe.sh PaymentService
+  Check if a function is exported and used:  graph-describe.sh authenticate
+  Explore an unknown component's structure:  graph-describe.sh OrderProcessor
+
+Examples:
+  graph-describe.sh User
+  graph-describe.sh PaymentService
+  graph-describe.sh process_payment
+HELP
+  exit 0
+}
+
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help
+
 if [ -z "$1" ]; then
-    echo "Usage: graph-describe.sh <component-name>"
-    echo ""
-    echo "Describe a component (class, model, service) or function and its relationships."
-    echo ""
-    echo "Examples:"
-    echo "  graph-describe.sh User              # Describe User model"
-    echo "  graph-describe.sh PaymentService    # Describe PaymentService"
-    echo "  graph-describe.sh authenticate      # Describe authenticate function"
-    exit 1
+    show_help
 fi
 
 NAME="$1"

@@ -10,16 +10,38 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/graph-helper.sh"
 
+show_help() {
+  cat <<'HELP'
+Usage: graph-find-serializers.sh <model-name>
+
+Find all serializer classes associated with a model.
+
+Commands:
+  graph-find-serializers.sh <name>    List serializers that serialize <name>
+
+Arguments:
+  <model-name>    Name of the model to find serializers for (case-sensitive)
+
+Options:
+  --help, -h    Show this help
+
+Use Cases:
+  Find serializers to update before modifying a model:  graph-find-serializers.sh User
+  Audit API response shapes for a resource:             graph-find-serializers.sh Order
+  Check if a model has any serializer coverage:         graph-find-serializers.sh Invoice
+
+Examples:
+  graph-find-serializers.sh User
+  graph-find-serializers.sh Order
+  graph-find-serializers.sh Product
+HELP
+  exit 0
+}
+
+[[ "${1:-}" == "--help" || "${1:-}" == "-h" ]] && show_help
+
 if [ -z "$1" ]; then
-    echo "Usage: graph-find-serializers.sh <model-name>"
-    echo ""
-    echo "Find all serializers for a model."
-    echo "IMPORTANT: Run this BEFORE modifying a model to update serializers."
-    echo ""
-    echo "Examples:"
-    echo "  graph-find-serializers.sh User   # Find User serializers"
-    echo "  graph-find-serializers.sh Order  # Find Order serializers"
-    exit 1
+    show_help
 fi
 
 NAME="$1"
