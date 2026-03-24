@@ -458,10 +458,24 @@ aimaestro-agent.sh plugin enable my-api my-plugin
 aimaestro-agent.sh plugin disable my-api my-plugin
 ```
 
-With explicit scope:
+**Per-project plugin control (local scope):**
+
+Plugins are installed at user level, but can be enabled or disabled per project using `--scope local`:
+
 ```bash
-aimaestro-agent.sh plugin enable my-api my-plugin --scope local
+# Disable a user-level plugin only in this project
+claude plugin disable plugin-name@marketplace-name --scope local
+
+# Enable a plugin locally even if disabled at user level
+claude plugin enable plugin-name@marketplace-name --scope local
 ```
+
+The `plugin-name@marketplace-name` format is required. Find the correct key with:
+```bash
+claude plugin list
+```
+
+**Important**: There is NO way to selectively enable/disable user-level standalone elements (skills, agents, rules, commands) per project. Only plugins support per-project enable/disable. For standalone elements, the only override mechanism is placing a local element with the same name in `.claude/` — it will shadow the user-level one.
 
 ---
 
@@ -555,12 +569,86 @@ Claude Code uses three scopes for elements and configuration. Higher scopes over
 | Agents | YES (.md file) | YES | File operations (create/delete .md) |
 | Rules | YES (.md file) | YES | File operations (create/delete .md) |
 | Commands | YES (.md file) | YES | File operations (create/delete .md) |
-| Hooks | YES (in settings.json) | YES | Settings edit or `/hooks` menu |
+| Hooks | YES (in settings.json) | YES (hooks/hooks.json) | Settings edit or `/hooks` menu |
 | MCP Servers | YES (via `claude mcp add`) | YES (.mcp.json in plugin) | `claude mcp` CLI only |
 | LSP Servers | **NO — only inside plugins** | YES (.lsp.json in plugin) | Plugin install/uninstall |
 | Output Styles | YES (file) | YES | File operations |
 | Plugins | N/A | N/A | `claude plugin` CLI |
 | Marketplaces | N/A | N/A | `claude plugin marketplace` CLI |
+
+### Element Internal Structure
+
+**Skills** — Each skill is a folder containing a `SKILL.md` file with optional YAML frontmatter:
+```
+skills/my-skill/SKILL.md
+```
+Frontmatter fields (all optional): `description`, `name`, `version`, `author`, `tags`, `globs`, and any custom fields. All frontmatter fields are extracted and displayed in the UI.
+
+**Agents** — Each agent is a `.md` file in the agents/ directory with optional YAML frontmatter:
+```
+agents/my-agent.md
+```
+Frontmatter fields: `name`, `description`, `model`, and any custom fields.
+
+**Rules** — Each rule is a `.md` file in the rules/ directory:
+```
+rules/my-rule.md
+```
+The first non-heading, non-empty line is used as a preview/description.
+
+**Commands** — Each command is a `.md` file in the commands/ directory:
+```
+commands/my-command.md
+```
+Triggered with `/<filename>` (without .md extension). Frontmatter field `description` is used in UI.
+
+**Hooks** — Defined in `hooks/hooks.json` (inside plugins) or in `settings.json` / `settings.local.json` (standalone). Each hook has:
+- `event`: The trigger event type (e.g. `PreToolUse`, `PostToolUse`, `Stop`)
+- `matcher`: Pattern to match (e.g. tool name, `*` for all)
+- `command`: Shell command to execute
+- `type`: `"prompt"` for prompt-type hooks (inject text into conversation) or omitted for command hooks
+- `sync`: `true` for blocking (waits for result), `false`/omitted for async
+
+Hook naming convention (auto-generated for display):
+```
+{event}_{type}_{scriptName}_{matcher}_{sync|async}_{pluginName}_hook_{N}
+```
+Example: `PreToolUse_command_tldr-read-enforcer_Read_async_my-plugin_hook_1`
+
+**MCP Servers** — Defined via `claude mcp add` CLI (stored in `~/.claude.json`) or bundled in plugin `.mcp.json`. Each server has:
+- `type`: `"stdio"`, `"http"`, or `"sse"`
+- `command` + `args` (for stdio) or `url` (for http/sse)
+- `env`: Environment variables
+- `headers`: HTTP headers (for http/sse)
+- `${CLAUDE_PLUGIN_ROOT}` variable resolved to plugin install directory in plugin `.mcp.json`
+
+**LSP Servers** — Only in plugin `.lsp.json` files. Each server has:
+- `command`: Server executable
+- `extensionToLanguage`: Map of file extensions to language IDs
+- Languages derived from `extensionToLanguage` values
+
+**Output Styles** — Files in the `output-styles/` directory. Each file defines a custom output format.
+
+### Plugin Structure
+
+A Claude Code plugin is a directory containing at minimum `.claude-plugin/plugin.json`. Detection criteria:
+```
+plugin-dir/
+  .claude-plugin/
+    plugin.json          # REQUIRED — manifest with name, version, description
+    marketplace.json     # Optional — marketplace metadata
+  skills/                # Optional — bundled skills (each subfolder with SKILL.md)
+  agents/                # Optional — bundled agent .md files
+  commands/              # Optional — bundled command .md files
+  hooks/
+    hooks.json           # Optional — bundled hooks
+  rules/                 # Optional — bundled rule .md files
+  .mcp.json              # Optional — bundled MCP servers
+  .lsp.json              # Optional — bundled LSP servers
+  output-styles/         # Optional — bundled output styles
+```
+
+Plugins are installed at user level (even with `--scope local`). The `--scope local` flag for plugins controls enable/disable state per project, NOT install location.
 
 ### 22. Manage MCP servers
 
