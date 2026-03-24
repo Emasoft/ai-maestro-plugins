@@ -513,7 +513,225 @@ Source formats: `owner/repo`, `github:owner/repo`, HTTPS/SSH Git URLs, `#branch`
 
 ---
 
-### 22. Manage agent sessions
+## Claude Code Configuration Reference (Single Source of Truth)
+
+### Scope System
+
+Claude Code uses three scopes for elements and configuration. Higher scopes override lower ones.
+
+| Scope | Meaning | Who can see it |
+|-------|---------|----------------|
+| `local` (default) | Private to you in the current project | Only you, only in this project |
+| `project` | Shared with the team via version control | Everyone working on this project |
+| `user` | Available to you across all projects | Only you, in all projects |
+
+**Precedence**: local > project > user. A local element with the same name as a user element overrides it.
+
+### Configuration File Locations
+
+| File | What it stores | Managed by |
+|------|---------------|------------|
+| `~/.claude.json` | User-scoped MCP servers (top-level `mcpServers`), local-scoped MCP servers (under `projects[path].mcpServers`), plugin data, agent defaults | `claude mcp` CLI for MCP; Claude Code internals for the rest |
+| `~/.claude/settings.json` | User-scoped settings (shared by all your projects) | `claude config` or direct edit |
+| `.claude/settings.local.json` | Local-scoped settings (private to you in this project) | `claude config` or direct edit |
+| `.claude/settings.json` | Project-scoped settings (shared via VCS) | `claude config` or direct edit |
+| `.mcp.json` (project root) | Project-scoped MCP servers (shared via VCS) | `claude mcp add --scope project` |
+| `~/.claude/skills/` | User-scoped standalone skills | Manual file management |
+| `~/.claude/agents/` | User-scoped standalone agent definitions | Manual file management |
+| `~/.claude/rules/` | User-scoped standalone rules | Manual file management |
+| `~/.claude/commands/` | User-scoped standalone commands | Manual file management |
+| `.claude/skills/` | Local-scoped standalone skills | Manual file management |
+| `.claude/agents/` | Local-scoped standalone agent definitions | Manual file management |
+| `.claude/rules/` | Local-scoped standalone rules | Manual file management |
+| `.claude/commands/` | Local-scoped standalone commands | Manual file management |
+
+**IMPORTANT**: Never edit `~/.claude.json` directly. Use the appropriate CLI commands.
+
+### Element Types and Where They Live
+
+| Element | Can be standalone? | Can be in plugins? | Managed by |
+|---------|-------------------|-------------------|------------|
+| Skills | YES (folder with SKILL.md) | YES | File operations (create/delete folder) |
+| Agents | YES (.md file) | YES | File operations (create/delete .md) |
+| Rules | YES (.md file) | YES | File operations (create/delete .md) |
+| Commands | YES (.md file) | YES | File operations (create/delete .md) |
+| Hooks | YES (in settings.json) | YES | Settings edit or `/hooks` menu |
+| MCP Servers | YES (via `claude mcp add`) | YES (.mcp.json in plugin) | `claude mcp` CLI only |
+| LSP Servers | **NO — only inside plugins** | YES (.lsp.json in plugin) | Plugin install/uninstall |
+| Output Styles | YES (file) | YES | File operations |
+| Plugins | N/A | N/A | `claude plugin` CLI |
+| Marketplaces | N/A | N/A | `claude plugin marketplace` CLI |
+
+### 22. Manage MCP servers
+
+MCP (Model Context Protocol) servers give Claude access to external tools, databases, and APIs.
+
+**CRITICAL RULE**: Always use `claude mcp` CLI to add/remove/modify MCP servers. Never edit `~/.claude.json` directly. Reading `~/.claude.json` for display purposes is acceptable.
+
+**Add a local-scoped MCP server (default — private to you in this project):**
+```bash
+# stdio transport (local process)
+claude mcp add --scope local --transport stdio <name> -- <command> [args...]
+claude mcp add --scope local --transport stdio airtable -- npx -y airtable-mcp-server
+
+# HTTP transport (remote server)
+claude mcp add --scope local --transport http <name> <url>
+claude mcp add --scope local --transport http notion https://mcp.notion.com/mcp
+
+# SSE transport (deprecated, use HTTP instead)
+claude mcp add --scope local --transport sse <name> <url>
+
+# With environment variables
+claude mcp add --scope local --transport stdio --env API_KEY=xxx myserver -- npx my-mcp-server
+
+# With authentication header
+claude mcp add --scope local --transport http --header "Authorization: Bearer token" myapi https://api.example.com/mcp
+```
+
+**Add a user-scoped MCP server (available across all your projects):**
+```bash
+claude mcp add --scope user --transport http github https://api.githubcopilot.com/mcp/
+```
+
+**Add a project-scoped MCP server (shared via .mcp.json in VCS):**
+```bash
+claude mcp add --scope project --transport http shared-api https://api.company.com/mcp
+```
+
+**List all configured MCP servers:**
+```bash
+claude mcp list
+```
+
+**Get details for a specific server:**
+```bash
+claude mcp get <name>
+```
+
+**Remove an MCP server:**
+```bash
+claude mcp remove <name>
+```
+
+**Add from JSON configuration:**
+```bash
+claude mcp add-json <name> '{"type":"http","url":"https://api.example.com/mcp"}'
+claude mcp add-json <name> '{"type":"stdio","command":"npx","args":["-y","my-server"]}'
+```
+
+**Authenticate with OAuth (remote servers):**
+```
+/mcp
+```
+Then follow the browser login flow.
+
+**MCP storage locations (read-only reference):**
+- User-scoped: `~/.claude.json` → top-level `mcpServers`
+- Local-scoped: `~/.claude.json` → `projects[projectPath].mcpServers`
+- Project-scoped: `.mcp.json` at project root
+- Plugin-bundled: `.mcp.json` at plugin root (managed by plugin install/uninstall)
+
+**Plugin-bundled MCP servers** start automatically when the plugin is enabled. Use `/reload-plugins` if you enable/disable a plugin during a session.
+
+---
+
+### 23. LSP servers (plugin-only)
+
+LSP (Language Server Protocol) servers provide language intelligence (autocomplete, diagnostics, go-to-definition).
+
+**LSP servers ONLY exist inside plugins.** There are no standalone LSP servers. The `.lsp.json` file can only be at a plugin root, never outside a plugin.
+
+To add LSP support: install a plugin that bundles a `.lsp.json` configuration.
+To remove LSP support: uninstall or disable the plugin that provides it.
+
+```bash
+# Install a plugin that provides LSP
+aimaestro-agent.sh plugin install my-api lsp-plugin-name
+
+# Disable it (LSP stops)
+aimaestro-agent.sh plugin disable my-api lsp-plugin-name
+
+# Enable it (LSP resumes)
+aimaestro-agent.sh plugin enable my-api lsp-plugin-name
+```
+
+---
+
+### 24. Manage standalone elements (skills, agents, rules, commands)
+
+Standalone elements are installed directly in `.claude/` folders, not via plugins.
+
+**Skills** — folder with SKILL.md:
+```bash
+# User-scoped (all projects)
+mkdir -p ~/.claude/skills/my-skill && cat > ~/.claude/skills/my-skill/SKILL.md << 'EOF'
+---
+description: My custom skill
+---
+# My Skill
+Instructions here...
+EOF
+
+# Local-scoped (this project only)
+mkdir -p .claude/skills/my-skill && cat > .claude/skills/my-skill/SKILL.md << 'EOF'
+---
+description: My local skill
+---
+# My Local Skill
+Instructions here...
+EOF
+
+# Remove a skill
+rm -rf ~/.claude/skills/my-skill      # user-scoped
+rm -rf .claude/skills/my-skill        # local-scoped
+```
+
+**Agents** — .md files:
+```bash
+# User-scoped
+cat > ~/.claude/agents/my-agent.md << 'EOF'
+---
+name: my-agent
+description: Custom agent persona
+---
+You are a specialized agent...
+EOF
+
+# Remove
+rm ~/.claude/agents/my-agent.md
+```
+
+**Rules** — .md files:
+```bash
+# User-scoped
+cat > ~/.claude/rules/my-rule.md << 'EOF'
+# My Rule
+Always follow this convention...
+EOF
+
+# Remove
+rm ~/.claude/rules/my-rule.md
+```
+
+**Commands** — .md files (trigger with /command-name):
+```bash
+# User-scoped
+cat > ~/.claude/commands/my-command.md << 'EOF'
+---
+description: My custom command
+---
+Execute this when the user runs /my-command...
+EOF
+
+# Remove
+rm ~/.claude/commands/my-command.md
+```
+
+**Override precedence**: A local element with the same name as a user-level element always takes priority. There is no way to selectively disable user-level standalone elements per project.
+
+---
+
+### 25. Manage agent sessions
 
 Interact with the agent's tmux session directly.
 
@@ -538,7 +756,7 @@ tmux attach-session -t my-api
 
 ---
 
-### 23. Troubleshooting: agent not responding
+### 26. Troubleshooting: agent not responding
 
 **Agent not found in list:**
 ```bash
