@@ -134,6 +134,82 @@ Navigate to Settings → Claude Plugins → Elements tab → filter by MCP Serve
 
 After discovering tools in the UI, click the "Copy Tools List" button in the footer of the tools panel.
 
+## Discovering tools WITHOUT installing the plugin
+
+### 13. Discover tools from a remote HTTP/SSE MCP server
+
+When the MCP server is hosted remotely (no plugin needed):
+
+```bash
+uv run scripts_dev/mcp_discovery.py --url https://mcp.example.com/sse
+```
+
+With authentication:
+```bash
+uv run scripts_dev/mcp_discovery.py --url https://mcp.example.com/sse --bearer-token sk-abc123
+```
+
+### 14. Discover tools from an npx package (without installing the plugin)
+
+When you want to check what tools an npm-based MCP server provides before installing:
+
+```bash
+uv run scripts_dev/mcp_discovery.py --transport stdio -- npx -y <package-name>
+```
+
+Example — check chrome-devtools-mcp tools:
+```bash
+uv run scripts_dev/mcp_discovery.py --transport stdio -- npx -y chrome-devtools-mcp@latest --headless
+```
+
+Example — check a Python MCP server:
+```bash
+uv run scripts_dev/mcp_discovery.py --transport stdio -- uvx mcp-server-sqlite --db-path /tmp/test.db
+```
+
+### 15. Discover tools from a local binary/script (not yet in a plugin)
+
+When you have an MCP server binary or script but it's not in a plugin yet:
+
+```bash
+uv run scripts_dev/mcp_discovery.py --transport stdio -- /path/to/mcp-server --arg1 --arg2
+```
+
+Or with explicit command and args:
+```bash
+uv run scripts_dev/mcp_discovery.py --command node --command-arg /path/to/server.js
+```
+
+### 16. Discover tools from a GitHub repo's .mcp.json (before installing)
+
+When you want to check a plugin's MCP tools before adding the marketplace:
+
+```bash
+# Download just the .mcp.json
+curl -sL "https://raw.githubusercontent.com/owner/repo/main/plugins/plugin-name/.mcp.json" > /tmp/check.json
+# Discover tools from it
+uv run scripts_dev/mcp_discovery.py /tmp/check.json <server-name> --json
+```
+
+### 17. Discover tools with custom environment variables
+
+When the MCP server needs specific env vars to start:
+
+```bash
+uv run scripts_dev/mcp_discovery.py --transport stdio \
+  --env API_KEY=sk-123 \
+  --env DB_HOST=localhost \
+  -- node /path/to/server.js
+```
+
+### 18. Discover tools with SSE transport (legacy servers)
+
+Some older MCP servers use Server-Sent Events instead of Streamable HTTP:
+
+```bash
+uv run scripts_dev/mcp_discovery.py --url https://mcp.example.com/events --transport sse
+```
+
 ## Finding the server name
 
 The server name is the key in the `.mcp.json` file. To find it:
