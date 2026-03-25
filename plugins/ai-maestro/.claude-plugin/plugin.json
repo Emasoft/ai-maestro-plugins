@@ -1,9 +1,107 @@
 {
   "name": "ai-maestro",
-  "version": "1.0.0",
+  "displayName": "AI Maestro",
+  "description": "AI agent orchestration — memory search, code graph, AMP messaging, agent identity, docs search, task planning, team governance, team kanban, MCP discovery, and hook debugging.",
+  "version": "2.0.0",
   "author": {
-    "name": "23blocks"
+    "name": "23blocks",
+    "email": "hello@23blocks.com"
   },
   "homepage": "https://github.com/23blocks-OS/ai-maestro",
-  "license": "MIT"
+  "repository": "https://github.com/23blocks-OS/ai-maestro-plugins",
+  "license": "MIT",
+  "keywords": [
+    "ai",
+    "agents",
+    "orchestration",
+    "memory",
+    "graph",
+    "messaging",
+    "amp",
+    "identity",
+    "governance",
+    "kanban",
+    "mcp"
+  ],
+  "requirements": {
+    "tools": ["curl", "jq", "openssl", "base64"]
+  },
+  "skills": [
+    {
+      "name": "agent-identity",
+      "file": "skills/agent-identity/SKILL.md",
+      "triggers": ["agent identity", "authenticate agent", "AID protocol", "identity document", "aid-init", "aid-token"]
+    },
+    {
+      "name": "agent-messaging",
+      "file": "skills/agent-messaging/SKILL.md",
+      "triggers": ["check my messages", "send a message", "reply to", "read message", "inbox", "amp-send", "amp-inbox"]
+    },
+    {
+      "name": "ai-maestro-agents-management",
+      "file": "skills/ai-maestro-agents-management/SKILL.md",
+      "triggers": ["create agent", "list agents", "delete agent", "rename agent", "hibernate agent", "wake agent", "install plugin", "install skill"]
+    },
+    {
+      "name": "debug-hooks",
+      "file": "skills/debug-hooks/SKILL.md",
+      "triggers": ["debug hooks", "hook not firing", "hook error", "hooks broken"]
+    },
+    {
+      "name": "docs-search",
+      "file": "skills/docs-search/SKILL.md",
+      "triggers": ["search docs", "find function", "check API", "docs search"]
+    },
+    {
+      "name": "graph-query",
+      "file": "skills/graph-query/SKILL.md",
+      "triggers": ["find callers", "check dependencies", "what uses this", "graph query", "code graph"]
+    },
+    {
+      "name": "mcp-discovery",
+      "file": "skills/mcp-discovery/SKILL.md",
+      "triggers": ["discover MCP", "list MCP tools", "MCP server tools", "mcp-discover"]
+    },
+    {
+      "name": "memory-search",
+      "file": "skills/memory-search/SKILL.md",
+      "triggers": ["search memory", "what did we discuss", "remember when", "check history"]
+    },
+    {
+      "name": "planning",
+      "file": "skills/planning/SKILL.md",
+      "triggers": ["create plan", "task plan", "plan implementation", "track progress"]
+    },
+    {
+      "name": "team-governance",
+      "file": "skills/team-governance/SKILL.md",
+      "triggers": ["create team", "assign agent", "team governance", "chief of staff", "set team type"]
+    },
+    {
+      "name": "team-kanban",
+      "file": "skills/team-kanban/SKILL.md",
+      "triggers": ["kanban board", "create task", "team tasks", "task status", "track tasks"]
+    }
+  ],
+  "commands": [
+    { "name": "amp-init", "description": "Initialize agent identity and messaging", "script": "scripts/amp-init.sh" },
+    { "name": "amp-identity", "description": "Quick identity check", "script": "scripts/amp-identity.sh" },
+    { "name": "amp-status", "description": "Show messaging status and registrations", "script": "scripts/amp-status.sh" },
+    { "name": "amp-inbox", "description": "Check message inbox", "script": "scripts/amp-inbox.sh" },
+    { "name": "amp-read", "description": "Read a specific message", "script": "scripts/amp-read.sh" },
+    { "name": "amp-send", "description": "Send a message to another agent", "script": "scripts/amp-send.sh" },
+    { "name": "amp-reply", "description": "Reply to a message", "script": "scripts/amp-reply.sh" },
+    { "name": "amp-delete", "description": "Delete a message", "script": "scripts/amp-delete.sh" },
+    { "name": "amp-register", "description": "Register with external AMP provider", "script": "scripts/amp-register.sh" },
+    { "name": "amp-fetch", "description": "Fetch messages from external providers", "script": "scripts/amp-fetch.sh" },
+    { "name": "amp-download", "description": "Download message attachments", "script": "scripts/amp-download.sh" },
+    { "name": "amp-statusline", "description": "Install AMP status line for Claude Code", "script": "scripts/amp-statusline.sh" }
+  ],
+  "storage": {
+    "baseDir": "~/.agent-messaging",
+    "config": "config.json",
+    "keys": "keys/",
+    "inbox": "messages/inbox/",
+    "sent": "messages/sent/"
+  }
 }

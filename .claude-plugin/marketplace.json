@@ -14,14 +14,15 @@
     {
       "name": "ai-maestro",
       "source": "./plugins/ai-maestro",
-      "description": "AI agent orchestration — memory search, code graph, AMP messaging, docs search, task planning",
-      "version": "1.0.0",
+      "description": "AI agent orchestration — memory search, code graph, AMP messaging, agent identity, docs search, task planning, team governance, team kanban, MCP discovery, hook debugging. Unifies former agent-messaging and agent-identity plugins.",
+      "version": "2.0.0",
       "author": {
-        "name": "23blocks"
+        "name": "23blocks",
+        "email": "hello@23blocks.com"
       },
       "homepage": "https://github.com/23blocks-OS/ai-maestro",
       "license": "MIT",
-      "keywords": ["ai", "agents", "orchestration", "memory", "graph", "messaging", "amp"],
+      "keywords": ["ai", "agents", "orchestration", "memory", "graph", "messaging", "amp", "identity", "governance", "kanban", "mcp"],
       "category": "productivity"
     },
     {
