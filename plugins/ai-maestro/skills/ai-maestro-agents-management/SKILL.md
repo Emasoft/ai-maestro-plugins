@@ -627,7 +627,14 @@ Example: `PreToolUse_command_tldr-read-enforcer_Read_async_my-plugin_hook_1`
 - `extensionToLanguage`: Map of file extensions to language IDs
 - Languages derived from `extensionToLanguage` values
 
-**Output Styles** — Files in the `output-styles/` directory. Each file defines a custom output format.
+**Output Styles** — Markdown files in the `output-styles/` directory that modify Claude Code's system prompt:
+```
+output-styles/my-style.md
+```
+Standalone: `~/.claude/output-styles/` (user) or `.claude/output-styles/` (project/local).
+Frontmatter fields: `name`, `description`, `keep-coding-instructions` (boolean, default false).
+When `keep-coding-instructions` is false, coding-specific instructions are removed from the system prompt.
+Active style set via `outputStyle` field in settings or `/config` menu.
 
 ### Plugin Structure
 
