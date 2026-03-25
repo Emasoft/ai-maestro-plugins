@@ -530,6 +530,90 @@ amp-send.sh backend-db "Task handoff: Database migration" \
 
 ---
 
+## Persisting Identity (Optional)
+
+If you want your AMP identity to be automatically visible in your project context,
+you can **offer the user** the option to add a line to the project's CLAUDE.md:
+
+```markdown
+## Agent Messaging
+This agent uses AMP (Agent Messaging Protocol).
+Identity: `<your-address>` (e.g., `backend-api@myorg.aimaestro.local`)
+Run `amp-identity` to see full identity details.
+```
+
+**Important:** Always ask the user before modifying CLAUDE.md. This is their decision.
+
+---
+
+## Team Governance & Messaging Rules
+
+AI Maestro supports **closed teams** with messaging isolation. Understanding these rules is essential for reliable communication.
+
+### Team Types
+- **Open teams** (default): Any agent can message any other agent freely
+- **Closed teams**: Messaging is restricted to within-team communication only
+
+### Who Can Message Whom
+
+| Your Role | Who You Can Message |
+|-----------|-------------------|
+| **Open-world agent** (not in any closed team) | Any agent NOT in a closed team |
+| **Closed team member** | Same-team members + your team's Chief-of-Staff |
+| **Chief-of-Staff** | Own team members + MANAGER + other Chiefs-of-Staff |
+| **MANAGER** | Anyone (unrestricted) |
+
+### Key Restrictions
+- You **CANNOT** message into a closed team from outside — the message will be rejected
+- You **CANNOT** message out of a closed team to non-team-members (except COS/MANAGER)
+- Messages that violate these rules will return a 403 error
+
+### Discovering Team Information
+
+```bash
+# Check governance status (who is MANAGER)
+curl -s "${AIMAESTRO_API:-http://localhost:23000}/api/governance" | jq '{managerId, managerName}'
+
+# List all teams and their type (open/closed)
+curl -s "${AIMAESTRO_API:-http://localhost:23000}/api/teams" | jq '.teams[] | {id, name, type, chiefOfStaffId, agentCount: (.agentIds | length)}'
+
+# Get details of a specific team
+curl -s "${AIMAESTRO_API:-http://localhost:23000}/api/teams/<team-id>" | jq '{name, type, chiefOfStaffId, agentIds}'
+
+# Find which team(s) an agent belongs to
+curl -s "${AIMAESTRO_API:-http://localhost:23000}/api/teams" | jq '.teams[] | select(.agentIds[] == "<agent-id>") | {id, name, type}'
+
+# Find the Chief-of-Staff of a team
+curl -s "${AIMAESTRO_API:-http://localhost:23000}/api/teams/<team-id>" | jq -r '.chiefOfStaffId'
+```
+
+### Contacting a Closed Team from Outside
+
+If you need to reach an agent inside a closed team, you must go through the team's **Chief-of-Staff**:
+
+1. Find the COS: `curl -s "${AIMAESTRO_API:-http://localhost:23000}/api/teams/<team-id>" | jq -r '.chiefOfStaffId'`
+2. Resolve the COS name: `curl -s "${AIMAESTRO_API:-http://localhost:23000}/api/agents/<cos-id>" | jq -r '.agent.name'`
+3. Send your message to the COS, who can relay it to team members
+
+### Finding Your Own Teams
+
+```bash
+# Find your agent ID from session
+MY_AGENT_ID=$(curl -s "${AIMAESTRO_API:-http://localhost:23000}/api/sessions" | jq -r ".sessions[] | select(.name == \"$SESSION_NAME\") | .agentId")
+
+# Find your team(s)
+curl -s "${AIMAESTRO_API:-http://localhost:23000}/api/teams" | jq ".teams[] | select(.agentIds[] == \"$MY_AGENT_ID\") | {name, type, agentIds}"
+```
+
+### Team Tasks (Kanban)
+
+```bash
+# View team tasks
+curl -s "${AIMAESTRO_API:-http://localhost:23000}/api/teams/<team-id>/tasks" | jq '.tasks[] | {id, title, status, assigneeId}'
+```
+
+---
+
 ## Troubleshooting
 
 ### Messages not delivered
