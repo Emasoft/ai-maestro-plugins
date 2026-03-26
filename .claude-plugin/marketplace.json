@@ -8,7 +8,18 @@
     "description": "Official AI Maestro plugins for Claude Code — agent orchestration, messaging, identity, and role plugins",
     "version": "2.0.0",
     "homepage": "https://github.com/23blocks-OS/ai-maestro",
-    "repository": "https://github.com/23blocks-OS/ai-maestro-plugins"
+    "repository": "https://github.com/23blocks-OS/ai-maestro-plugins",
+    "plugin_repos": {
+      "ai-maestro": "https://github.com/Emasoft/ai-maestro-plugin",
+      "agent-messaging": "https://github.com/agentmessaging/claude-plugin",
+      "agent-identity": "https://github.com/agentmessaging/agent-identity",
+      "ai-maestro-assistant-manager-agent": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent",
+      "ai-maestro-chief-of-staff": "https://github.com/Emasoft/ai-maestro-chief-of-staff",
+      "ai-maestro-architect-agent": "https://github.com/Emasoft/ai-maestro-architect-agent",
+      "ai-maestro-integrator-agent": "https://github.com/Emasoft/ai-maestro-integrator-agent",
+      "ai-maestro-orchestrator-agent": "https://github.com/Emasoft/ai-maestro-orchestrator-agent",
+      "ai-maestro-programmer-agent": "https://github.com/Emasoft/ai-maestro-programmer-agent"
+    }
   },
   "plugins": [
     {
