@@ -5,34 +5,63 @@
     "email": "hello@23blocks.com"
   },
   "metadata": {
-    "description": "Official AI Maestro plugins for Claude Code",
-    "version": "1.0.0",
+    "description": "Official AI Maestro plugins for Claude Code — agent orchestration, messaging, identity, and role plugins",
+    "version": "2.0.0",
     "homepage": "https://github.com/23blocks-OS/ai-maestro",
     "repository": "https://github.com/23blocks-OS/ai-maestro-plugins"
   },
   "plugins": [
     {
       "name": "ai-maestro",
-      "source": "./plugins/ai-maestro",
-      "description": "AI agent orchestration — memory search, code graph, AMP messaging, agent identity, docs search, task planning, team governance, team kanban, MCP discovery, hook debugging. Unifies former agent-messaging and agent-identity plugins.",
-      "version": "2.0.0",
-      "author": {
-        "name": "23blocks",
-        "email": "hello@23blocks.com"
+      "source": {
+        "source": "github",
+        "repo": "Emasoft/ai-maestro-plugin"
       },
+      "description": "AI agent orchestration — agent management, memory search, code graph, docs search, task planning, team governance, team kanban, MCP discovery, and hook debugging.",
+      "version": "2.0.0",
+      "author": { "name": "23blocks", "email": "hello@23blocks.com" },
       "homepage": "https://github.com/23blocks-OS/ai-maestro",
       "license": "MIT",
-      "keywords": ["ai", "agents", "orchestration", "memory", "graph", "messaging", "amp", "identity", "governance", "kanban", "mcp"],
+      "keywords": ["ai", "agents", "orchestration", "memory", "graph", "governance", "kanban", "mcp"],
+      "category": "productivity"
+    },
+    {
+      "name": "agent-messaging",
+      "source": {
+        "source": "github",
+        "repo": "agentmessaging/claude-plugin"
+      },
+      "description": "Send and receive cryptographically signed messages between AI agents using the Agent Messaging Protocol (AMP). Local messaging, federation, file attachments, Ed25519 signatures.",
+      "version": "0.1.3",
+      "author": { "name": "Agent Messaging", "email": "info@agentmessaging.org" },
+      "homepage": "https://agentmessaging.org",
+      "license": "Apache-2.0",
+      "keywords": ["messaging", "agent", "communication", "AMP", "federation"],
+      "category": "productivity"
+    },
+    {
+      "name": "agent-identity",
+      "source": {
+        "source": "github",
+        "repo": "agentmessaging/agent-identity"
+      },
+      "description": "Authenticate AI agents with auth servers using the Agent Identity (AID) protocol. Ed25519 identity documents, proof of possession, and OAuth 2.0 token exchange.",
+      "version": "0.1.0",
+      "author": { "name": "Agent Messaging", "email": "info@agentmessaging.org" },
+      "homepage": "https://agentids.org",
+      "license": "MIT",
+      "keywords": ["identity", "authentication", "agent", "AID", "Ed25519", "OAuth"],
       "category": "productivity"
     },
     {
       "name": "ai-maestro-assistant-manager-agent",
-      "source": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent",
+      "source": {
+        "source": "github",
+        "repo": "Emasoft/ai-maestro-assistant-manager-agent"
+      },
       "description": "User's right hand — sole interlocutor with user, directs other roles. Requires AI Maestro for inter-agent messaging.",
       "version": "2.6.0",
-      "author": {
-        "name": "Emasoft"
-      },
+      "author": { "name": "Emasoft" },
       "homepage": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent",
       "license": "MIT",
       "keywords": ["ai", "agents", "manager", "assistant", "role-plugin"],
@@ -40,12 +69,13 @@
     },
     {
       "name": "ai-maestro-chief-of-staff",
-      "source": "https://github.com/Emasoft/ai-maestro-chief-of-staff",
+      "source": {
+        "source": "github",
+        "repo": "Emasoft/ai-maestro-chief-of-staff"
+      },
       "description": "Per-team agent management — staff planning, lifecycle, governance workflows, failure recovery. Requires AI Maestro v0.26.0+.",
       "version": "2.12.0",
-      "author": {
-        "name": "Emasoft"
-      },
+      "author": { "name": "Emasoft" },
       "homepage": "https://github.com/Emasoft/ai-maestro-chief-of-staff",
       "license": "MIT",
       "keywords": ["ai", "agents", "chief-of-staff", "governance", "team", "role-plugin"],
@@ -53,12 +83,13 @@
     },
     {
       "name": "ai-maestro-architect-agent",
-      "source": "https://github.com/Emasoft/ai-maestro-architect-agent",
+      "source": {
+        "source": "github",
+        "repo": "Emasoft/ai-maestro-architect-agent"
+      },
       "description": "Design documents, requirements analysis, architecture decisions — creates specifications. Requires AI Maestro for inter-agent messaging.",
       "version": "2.4.0",
-      "author": {
-        "name": "Emasoft"
-      },
+      "author": { "name": "Emasoft" },
       "homepage": "https://github.com/Emasoft/ai-maestro-architect-agent",
       "license": "MIT",
       "keywords": ["ai", "agents", "architect", "design", "specifications", "role-plugin"],
@@ -66,12 +97,13 @@
     },
     {
       "name": "ai-maestro-integrator-agent",
-      "source": "https://github.com/Emasoft/ai-maestro-integrator-agent",
+      "source": {
+        "source": "github",
+        "repo": "Emasoft/ai-maestro-integrator-agent"
+      },
       "description": "Quality gates, testing, merging, release candidates — ensures code quality. Requires AI Maestro for inter-agent messaging.",
       "version": "1.2.0",
-      "author": {
-        "name": "Emasoft"
-      },
+      "author": { "name": "Emasoft" },
       "homepage": "https://github.com/Emasoft/ai-maestro-integrator-agent",
       "license": "MIT",
       "keywords": ["ai", "agents", "integrator", "testing", "quality", "role-plugin"],
@@ -79,12 +111,13 @@
     },
     {
       "name": "ai-maestro-orchestrator-agent",
-      "source": "https://github.com/Emasoft/ai-maestro-orchestrator-agent",
+      "source": {
+        "source": "github",
+        "repo": "Emasoft/ai-maestro-orchestrator-agent"
+      },
       "description": "Task distribution, agent coordination, progress monitoring — executes plans via subagents. Requires AI Maestro for inter-agent messaging.",
       "version": "1.6.0",
-      "author": {
-        "name": "Emasoft"
-      },
+      "author": { "name": "Emasoft" },
       "homepage": "https://github.com/Emasoft/ai-maestro-orchestrator-agent",
       "license": "MIT",
       "keywords": ["ai", "agents", "orchestrator", "coordination", "tasks", "role-plugin"],
@@ -92,12 +125,13 @@
     },
     {
       "name": "ai-maestro-programmer-agent",
-      "source": "https://github.com/Emasoft/ai-maestro-programmer-agent",
+      "source": {
+        "source": "github",
+        "repo": "Emasoft/ai-maestro-programmer-agent"
+      },
       "description": "General-purpose programmer agent that writes code, runs tests, and creates PRs. Works standalone or as part of the AI Maestro ecosystem.",
       "version": "1.0.20",
-      "author": {
-        "name": "Emasoft"
-      },
+      "author": { "name": "Emasoft" },
       "homepage": "https://github.com/Emasoft/ai-maestro-programmer-agent",
       "license": "MIT",
       "keywords": ["ai", "agents", "programmer", "coding", "testing", "role-plugin"],
