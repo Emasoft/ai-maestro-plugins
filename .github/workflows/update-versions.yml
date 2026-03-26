@@ -1,0 +1,155 @@
+# Auto-update marketplace versions when plugins are pushed
+# Triggered by repository_dispatch from plugin repos via notify-marketplace.yml
+#
+# Setup:
+#   1. Each plugin repo has notify-marketplace.yml that sends plugin-updated events
+#   2. This workflow receives them and updates marketplace.json versions
+#   3. Requires MARKETPLACE_PAT secret with 'repo' scope for push access
+
+name: Update Versions
+
+on:
+  repository_dispatch:
+    types: [plugin-updated, plugin-version-update]
+  workflow_dispatch:
+    inputs:
+      plugin:
+        description: 'Specific plugin name to update (leave empty for all)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-versions
+  cancel-in-progress: false
+
+jobs:
+  update-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout marketplace
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.MARKETPLACE_PAT }}
+
+      - name: Show trigger info
+        run: |
+          echo "Triggered by: ${{ github.event_name }}"
+          if [ "${{ github.event_name }}" = "repository_dispatch" ]; then
+            echo "Plugin: ${{ github.event.client_payload.plugin || github.event.client_payload.plugin_name }}"
+            echo "Ref: ${{ github.event.client_payload.ref }}"
+            echo "Actor: ${{ github.event.client_payload.triggered_by }}"
+          fi
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Fetch and update plugin versions
+        env:
+          GH_TOKEN: ${{ secrets.MARKETPLACE_PAT }}
+        run: |
+          PLUGIN="${{ github.event.client_payload.plugin || github.event.client_payload.plugin_name || inputs.plugin }}"
+          MARKETPLACE_JSON=".claude-plugin/marketplace.json"
+
+          if [ -z "$PLUGIN" ]; then
+            echo "No specific plugin, updating all..."
+            PLUGINS=$(python3 -c "
+          import json
+          with open('$MARKETPLACE_JSON') as f:
+              data = json.load(f)
+          for p in data.get('plugins', []):
+              name = p.get('name', '')
+              source = p.get('source', {})
+              if isinstance(source, dict) and source.get('source') == 'github':
+                  print(f'{name}|{source.get(\"repo\", \"\")}')
+          ")
+          else
+            PLUGINS=$(python3 -c "
+          import json
+          with open('$MARKETPLACE_JSON') as f:
+              data = json.load(f)
+          for p in data.get('plugins', []):
+              if p.get('name') == '$PLUGIN':
+                  source = p.get('source', {})
+                  if isinstance(source, dict) and source.get('source') == 'github':
+                      print(f'$PLUGIN|{source.get(\"repo\", \"\")}')
+                  break
+          ")
+          fi
+
+          echo "$PLUGINS" | while IFS='|' read -r name owner_repo; do
+            [ -z "$name" ] || [ -z "$owner_repo" ] && continue
+            echo "Fetching version for $name from $owner_repo..."
+            VERSION=$(gh api "repos/$owner_repo/contents/.claude-plugin/plugin.json" \
+              --jq '.content' 2>/dev/null | base64 -d 2>/dev/null | \
+              python3 -c "import sys,json; print(json.load(sys.stdin).get('version',''))" 2>/dev/null || echo "")
+            if [ -n "$VERSION" ]; then
+              python3 -c "
+          import json
+          with open('$MARKETPLACE_JSON') as f:
+              data = json.load(f)
+          for p in data.get('plugins', []):
+              if p.get('name') == '$name':
+                  old = p.get('version', 'unknown')
+                  if old != '$VERSION':
+                      p['version'] = '$VERSION'
+                      print(f'  Updated $name: {old} -> $VERSION')
+                  else:
+                      print(f'  $name: already at $VERSION')
+                  break
+          with open('$MARKETPLACE_JSON', 'w') as f:
+              json.dump(data, f, indent=2)
+              f.write('\n')
+          "
+            else
+              echo "  WARNING: Could not fetch version for $name"
+            fi
+          done
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            git diff --stat
+          fi
+
+      - name: Commit and push
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git add .claude-plugin/marketplace.json
+          PLUGIN="${{ github.event.client_payload.plugin || github.event.client_payload.plugin_name || inputs.plugin || 'all' }}"
+          if [ "$PLUGIN" != "all" ]; then
+            git commit -m "chore: update $PLUGIN version in marketplace"
+          else
+            git commit -m "chore: sync all plugin versions in marketplace"
+          fi
+          for attempt in 1 2 3; do
+            git push && break
+            echo "Push failed (attempt $attempt), retrying..."
+            git pull --rebase origin main
+          done
+
+      - name: Summary
+        run: |
+          echo "## Version Update" >> $GITHUB_STEP_SUMMARY
+          python3 -c "
+          import json
+          data = json.load(open('.claude-plugin/marketplace.json'))
+          for p in data.get('plugins', []):
+              name = p.get('name', '?')
+              ver = p.get('version', '?')
+              print(f'- {name}: {ver}')
+          " >> $GITHUB_STEP_SUMMARY
