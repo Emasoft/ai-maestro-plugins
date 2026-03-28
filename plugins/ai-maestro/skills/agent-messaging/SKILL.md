@@ -1,6 +1,6 @@
 ---
 name: agent-messaging
-description: Send and receive cryptographically signed messages between AI agents using the Agent Messaging Protocol (AMP). Supports local messaging, federation across providers, file attachments, and Ed25519 signatures. Works with any AI agent that can execute shell commands.
+description: Send and receive cryptographically signed messages between AI agents using the Agent Messaging Protocol (AMP). Supports local messaging, federation across providers, file attachments, and Ed25519 signatures. Includes governance messaging rules for MANAGER, CHIEF-OF-STAFF, ORCHESTRATOR, and MEMBER titles. Works with any AI agent that can execute shell commands.
 license: Apache-2.0
 compatibility: Requires curl, jq, openssl, and base64 CLI tools. macOS and Linux supported. Scripts are POSIX-compatible bash.
 metadata:
@@ -292,6 +292,51 @@ The `AMP_DIR` environment variable points to the agent's directory and is auto-r
 - **Quarantine** — suspicious messages held for human review with risk scoring
 - **Private keys stay local** — never sent to providers
 - **Per-agent identity** — each agent has a unique keypair
+
+## Governance Messaging Rules
+
+Team messaging follows governance title hierarchies. Each title has specific messaging permissions.
+
+### Messaging Matrix
+
+| Sender → Recipient | MANAGER | CHIEF-OF-STAFF | ORCHESTRATOR | MEMBER |
+|---------------------|:-------:|:--------------:|:------------:|:------:|
+| **MANAGER** | — | Direct | Direct | Via COS |
+| **CHIEF-OF-STAFF** | Direct | — | Direct | Direct |
+| **ORCHESTRATOR** | Direct | Direct | — | Direct |
+| **MEMBER** | Via COS | Via COS | Direct (reports) | Peer (same team) |
+
+### Title Messaging Rules
+
+- **MANAGER** → owns the team. Can message COS and ORCHESTRATOR directly. Messages to MEMBERs are relayed through COS.
+- **CHIEF-OF-STAFF (COS)** → manages the roster and relays. Can message all titles directly. Primary relay between MANAGER and MEMBERs.
+- **ORCHESTRATOR** → primary communication hub for task coordination within a team. Can message team members directly. Can message MANAGER directly (no COS relay needed). Receives task reports from team members.
+- **MEMBER** → can send task completion reports (`amp-task-done.sh`) and blocker reports (`amp-task-blocked.sh`) directly to ORCHESTRATOR. Must relay other messages to MANAGER through COS. Can message peers on the same team directly.
+
+### Task Coordination via ORCHESTRATOR
+
+The ORCHESTRATOR is the primary communication hub for task coordination:
+
+1. **Task assignment**: ORCHESTRATOR sends tasks to MEMBERs directly
+2. **Task completion**: MEMBERs report to ORCHESTRATOR via `amp-task-done.sh <orchestrator> "<task-id>" "<summary>"`
+3. **Blockers**: MEMBERs escalate blockers via `amp-task-blocked.sh <orchestrator> "<task-id>" "<blocker-description>"`
+4. **Status rollup**: ORCHESTRATOR aggregates status and reports to MANAGER directly
+
+### Examples
+
+```bash
+# ORCHESTRATOR assigns task to a member
+amp-send.sh backend-dev "Task: implement auth" "Implement OAuth2 flow for /api/login" --type task --priority high
+
+# MEMBER reports task completion to orchestrator
+amp-send.sh orchestrator-main "Task done: auth" "OAuth2 implemented, PR #42 ready for review" --type status
+
+# MEMBER reports blocker to orchestrator
+amp-send.sh orchestrator-main "Blocked: auth" "Need Redis credentials for session store" --type alert --priority high
+
+# ORCHESTRATOR reports status rollup to manager
+amp-send.sh team-manager "Sprint status" "3/5 tasks done, 1 blocked on infra" --type status
+```
 
 ## Troubleshooting
 
