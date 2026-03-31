@@ -14,7 +14,7 @@
         {
             "name": "ai-maestro-plugin",
             "source": {"source": "url", "url": "https://github.com/Emasoft/ai-maestro-plugin.git"},
-            "description": "AI agent orchestration \u2014 agent management, memory search, code graph, AMP messaging, AID identity, docs search, task planning, team governance, team kanban, MCP discovery, hook debugging",
+            "description": "AI agent orchestration \u2014 agent management, memory search, code graph, AMP messaging, AID identity, docs search, task planning, team governance, team kanban, MCP discovery, hook debugging. Requires AI Maestro server installed and running.",
             "version": "2.2.0",
             "author": {
                 "name": "23blocks"
