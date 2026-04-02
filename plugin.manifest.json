@@ -1,36 +1,27 @@
 {
   "name": "ai-maestro",
-  "version": "1.0.0",
-  "description": "AI agent orchestration — memory search, code graph, AMP messaging, docs search, task planning",
+  "version": "2.3.1",
+  "description": "AI agent orchestration — 11 skills: agent management, AMP messaging, AID identity, memory search, code graph, docs search, planning, team governance, team kanban, MCP discovery, hook debugging. 12 AMP commands.",
   "output": "./plugins/ai-maestro",
   "plugin": {
-    "name": "ai-maestro",
-    "version": "1.0.0",
-    "author": { "name": "23blocks" },
-    "homepage": "https://github.com/23blocks-OS/ai-maestro",
+    "name": "ai-maestro-plugin",
+    "version": "2.3.1",
+    "author": { "name": "Emasoft" },
+    "homepage": "https://github.com/Emasoft/ai-maestro",
     "license": "MIT"
   },
   "sources": [
     {
       "name": "core",
-      "description": "AI Maestro core skills, scripts, and hooks",
-      "type": "local",
-      "path": "./src",
-      "map": {
-        "skills/*": "skills/",
-        "scripts/*": "scripts/",
-        "hooks/*": "hooks/"
-      }
-    },
-    {
-      "name": "amp-messaging",
-      "description": "Agent Messaging Protocol (AMP) — email for AI agents",
+      "description": "All skills, commands, hooks, and scripts from the canonical core plugin repo",
       "type": "git",
-      "repo": "https://github.com/agentmessaging/claude-plugin.git",
+      "repo": "https://github.com/Emasoft/ai-maestro-plugin.git",
       "ref": "main",
       "map": {
-        "skills/agent-messaging": "skills/agent-messaging",
-        "scripts/*.sh": "scripts/"
+        "skills/*": "skills/",
+        "commands/*": "commands/",
+        "scripts/*": "scripts/",
+        "hooks/*": "hooks/"
       }
     }
   ]

@@ -1,9 +1,39 @@
 {
-  "name": "ai-maestro",
-  "version": "1.0.0",
+  "name": "ai-maestro-plugin",
+  "displayName": "AI Maestro",
+  "description": "AI agent orchestration — agent management, memory search, code graph, docs search, task planning, team governance, team kanban, MCP discovery, hook debugging, AMP inter-agent messaging, and AID agent identity. Requires AI Maestro server (github.com/23blocks-OS/ai-maestro) installed and running.",
+  "version": "2.3.1",
   "author": {
-    "name": "23blocks"
+    "name": "23blocks",
+    "email": "hello@23blocks.com"
   },
   "homepage": "https://github.com/23blocks-OS/ai-maestro",
-  "license": "MIT"
+  "repository": "https://github.com/23blocks-OS/ai-maestro-plugin",
+  "license": "MIT",
+  "keywords": [
+    "ai",
+    "agents",
+    "orchestration",
+    "memory",
+    "graph",
+    "governance",
+    "kanban",
+    "mcp",
+    "messaging",
+    "identity",
+    "AMP",
+    "AID"
+  ],
+  "requirements": {
+    "tools": ["curl", "jq", "openssl", "base64"]
+  },
+  "storage": {
+    "baseDir": "~/.agent-messaging",
+    "config": "config.json",
+    "keys": "keys/",
+    "inbox": "messages/inbox/",
+    "sent": "messages/sent/",
+    "registrations": "registrations/",
+    "attachments": "attachments/"
+  }
 }

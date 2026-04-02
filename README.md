@@ -14,12 +14,17 @@ A skill is a capability you load into your agent. Out of the box, AI Maestro com
 
 | Skill | What your agent can do |
 |-------|----------------------|
-| **Agent Messaging** | Send and receive messages to other agents |
+| **Agent Messaging** | Send and receive messages to other agents via AMP |
+| **Agent Identity** | Ed25519 keys, proof of possession, token exchange via AID |
 | **Agent Management** | Create, rename, hibernate, wake up other agents |
 | **Memory Search** | Search through past conversations and remember context |
 | **Code Graph** | Understand how your codebase is connected |
 | **Docs Search** | Search auto-generated documentation |
 | **Planning** | Break down complex tasks and track progress |
+| **Team Governance** | Teams, COS assignment, governance titles, messaging rules |
+| **Team Kanban** | Task boards, dependencies, status tracking, GitHub sync |
+| **MCP Discovery** | Discover MCP server tools without installing plugins |
+| **Debug Hooks** | Debug Claude Code hook configurations and events |
 
 But here's the thing — **you're not stuck with this list.**
 
