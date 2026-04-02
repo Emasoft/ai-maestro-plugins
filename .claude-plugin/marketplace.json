@@ -38,8 +38,8 @@
                 "source": "url",
                 "url": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent.git"
             },
-            "description": "MANAGER role \u2014 user interlocutor, directs other roles",
-            "version": "2.6.6",
+            "description": "MANAGER title \u2014 user interlocutor, directs other agents",
+            "version": "2.6.7",
             "category": "role-plugin",
             "scope": "local"
         },
@@ -49,7 +49,7 @@
                 "source": "url",
                 "url": "https://github.com/Emasoft/ai-maestro-chief-of-staff.git"
             },
-            "description": "CHIEF-OF-STAFF role \u2014 per-team agent management, staff planning",
+            "description": "CHIEF-OF-STAFF title \u2014 per-team agent management, staff planning",
             "version": "2.12.3",
             "category": "role-plugin",
             "scope": "local"
@@ -60,7 +60,7 @@
                 "source": "url",
                 "url": "https://github.com/Emasoft/ai-maestro-architect-agent.git"
             },
-            "description": "ARCHITECT role \u2014 design documents, requirements, architecture",
+            "description": "ARCHITECT title \u2014 design documents, requirements, architecture",
             "version": "2.4.2",
             "category": "role-plugin",
             "scope": "local"
@@ -71,7 +71,7 @@
                 "source": "url",
                 "url": "https://github.com/Emasoft/ai-maestro-orchestrator-agent.git"
             },
-            "description": "ORCHESTRATOR role \u2014 task distribution, kanban, coordination",
+            "description": "ORCHESTRATOR title \u2014 task distribution, kanban, coordination",
             "version": "1.6.5",
             "category": "role-plugin",
             "scope": "local"
@@ -82,7 +82,7 @@
                 "source": "url",
                 "url": "https://github.com/Emasoft/ai-maestro-integrator-agent.git"
             },
-            "description": "INTEGRATOR role \u2014 quality gates, PR review, merging, releases",
+            "description": "INTEGRATOR title \u2014 quality gates, PR review, merging, releases",
             "version": "1.2.7",
             "category": "role-plugin",
             "scope": "local"
@@ -93,7 +93,7 @@
                 "source": "url",
                 "url": "https://github.com/Emasoft/ai-maestro-programmer-agent.git"
             },
-            "description": "PROGRAMMER role \u2014 general-purpose implementer, writes code",
+            "description": "PROGRAMMER title \u2014 general-purpose implementer, writes code",
             "version": "1.0.22",
             "category": "role-plugin",
             "scope": "local"
