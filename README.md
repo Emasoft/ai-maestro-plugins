@@ -36,3 +36,72 @@ claude plugin install ai-maestro-architect-agent ai-maestro-plugins --scope loca
 ## License
 
 MIT
+
+## Installation
+
+Add this marketplace to Claude Code, then install individual plugins:
+
+```bash
+# Register this marketplace (one-time setup)
+claude plugin marketplace add https://github.com/Emasoft/ai-maestro-plugins
+
+# Install the core AI Maestro plugin (user scope -- available in all sessions)
+claude plugin install ai-maestro-plugin ai-maestro-plugins --scope user
+
+# Install a role-plugin (local scope -- per agent project directory)
+claude plugin install ai-maestro-programmer-agent ai-maestro-plugins --scope local
+
+# Restart Claude Code to activate newly installed plugins
+# In Claude Code: use /reload-plugins or restart the session
+```
+
+## Update
+
+To update all plugins from this marketplace:
+
+```bash
+# Update the marketplace index
+claude plugin marketplace update ai-maestro-plugins
+
+# Update a specific plugin
+claude plugin update ai-maestro-plugin@ai-maestro-plugins
+claude plugin update ai-maestro-programmer-agent@ai-maestro-plugins
+```
+
+## Uninstall
+
+To remove individual plugins:
+
+```bash
+# Uninstall the core plugin (user scope)
+claude plugin uninstall ai-maestro-plugin --scope user
+
+# Uninstall a role-plugin (local scope)
+claude plugin uninstall ai-maestro-programmer-agent --scope local
+
+# Remove the marketplace registration
+claude plugin marketplace remove ai-maestro-plugins
+```
+
+## Troubleshooting
+
+**Plugin not found after marketplace add**
+Run `claude plugin marketplace update ai-maestro-plugins` to refresh the index, then retry the install.
+
+**Role-plugin not activating**
+Role-plugins must be installed with `--scope local` inside the agent's project directory. Verify you are in the correct working directory before installing.
+
+**Version not updating after plugin release**
+Run `claude plugin marketplace update ai-maestro-plugins` to pull the latest marketplace.json. If the version is still stale, try `claude plugin update <plugin-name>@ai-maestro-plugins`.
+
+**Hook path not found after update**
+After updating a plugin, restart Claude Code. If hook paths still cannot be found, run `claude plugin uninstall <plugin>` and reinstall from scratch.
+
+**Old version shown after update**
+Claude Code caches plugin files. Run `claude plugin marketplace update ai-maestro-plugins` to refresh the index, then `claude plugin update <plugin-name>@ai-maestro-plugins`. A Claude Code restart is required to pick up the new version.
+
+**Restart required after install or update**
+Plugin changes (skills, hooks, commands) take effect only after restarting Claude Code or running `/reload-plugins` in the active session.
+
+**MARKETPLACE_PAT errors in CI**
+The notify-marketplace workflow in each plugin repo requires a PAT secret named `MARKETPLACE_PAT`. See each plugin repo's `.github/workflows/notify-marketplace.yml` setup comments for how to create and store the token.

@@ -1,113 +1,124 @@
 {
-    "name": "ai-maestro-plugins",
-    "owner": {
-        "name": "23blocks",
-        "email": "hello@23blocks.com"
+  "name": "ai-maestro-plugins",
+  "owner": {
+    "name": "23blocks",
+    "email": "hello@23blocks.com"
+  },
+  "metadata": {
+    "description": "Official AI Maestro plugins for Claude Code",
+    "version": "1.0.0",
+    "homepage": "https://github.com/23blocks-OS/ai-maestro",
+    "repository": "https://github.com/23blocks-OS/ai-maestro-plugins"
+  },
+  "plugins": [
+    {
+      "name": "ai-maestro-plugin",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Emasoft/ai-maestro-plugin.git"
+      },
+      "description": "AI agent orchestration \u2014 12 skills: agent management, memory search, code graph, AMP messaging, AID identity, docs search, planning, team governance, team kanban, MCP discovery, hook debugging, network security.",
+      "version": "2.4.0",
+      "author": {
+        "name": "23blocks"
+      },
+      "homepage": "https://github.com/23blocks-OS/ai-maestro",
+      "license": "MIT",
+      "keywords": [
+        "ai",
+        "agents",
+        "orchestration",
+        "memory",
+        "graph",
+        "messaging",
+        "amp"
+      ],
+      "category": "productivity",
+      "repository": "https://github.com/Emasoft/ai-maestro-plugin"
     },
-    "metadata": {
-        "description": "Official AI Maestro plugins for Claude Code",
-        "version": "1.0.0",
-        "homepage": "https://github.com/23blocks-OS/ai-maestro",
-        "repository": "https://github.com/23blocks-OS/ai-maestro-plugins"
+    {
+      "name": "ai-maestro-assistant-manager-agent",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent.git"
+      },
+      "description": "MANAGER title \u2014 user interlocutor, directs other agents",
+      "version": "2.6.7",
+      "category": "role-plugin",
+      "scope": "local",
+      "repository": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent"
     },
-    "plugins": [
-        {
-            "name": "ai-maestro-plugin",
-            "source": {"source": "url", "url": "https://github.com/Emasoft/ai-maestro-plugin.git"},
-            "description": "AI agent orchestration \u2014 12 skills: agent management, memory search, code graph, AMP messaging, AID identity, docs search, planning, team governance, team kanban, MCP discovery, hook debugging, network security.",
-            "version": "2.4.0",
-            "author": {
-                "name": "23blocks"
-            },
-            "homepage": "https://github.com/23blocks-OS/ai-maestro",
-            "license": "MIT",
-            "keywords": [
-                "ai",
-                "agents",
-                "orchestration",
-                "memory",
-                "graph",
-                "messaging",
-                "amp"
-            ],
-            "category": "productivity"
-        },
-        {
-            "name": "ai-maestro-assistant-manager-agent",
-            "source": {
-                "source": "url",
-                "url": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent.git"
-            },
-            "description": "MANAGER title \u2014 user interlocutor, directs other agents",
-            "version": "2.6.7",
-            "category": "role-plugin",
-            "scope": "local"
-        },
-        {
-            "name": "ai-maestro-chief-of-staff",
-            "source": {
-                "source": "url",
-                "url": "https://github.com/Emasoft/ai-maestro-chief-of-staff.git"
-            },
-            "description": "CHIEF-OF-STAFF title \u2014 per-team agent management, staff planning",
-            "version": "2.12.3",
-            "category": "role-plugin",
-            "scope": "local"
-        },
-        {
-            "name": "ai-maestro-architect-agent",
-            "source": {
-                "source": "url",
-                "url": "https://github.com/Emasoft/ai-maestro-architect-agent.git"
-            },
-            "description": "ARCHITECT title \u2014 design documents, requirements, architecture",
-            "version": "2.4.2",
-            "category": "role-plugin",
-            "scope": "local"
-        },
-        {
-            "name": "ai-maestro-orchestrator-agent",
-            "source": {
-                "source": "url",
-                "url": "https://github.com/Emasoft/ai-maestro-orchestrator-agent.git"
-            },
-            "description": "ORCHESTRATOR title \u2014 task distribution, kanban, coordination",
-            "version": "1.6.5",
-            "category": "role-plugin",
-            "scope": "local"
-        },
-        {
-            "name": "ai-maestro-integrator-agent",
-            "source": {
-                "source": "url",
-                "url": "https://github.com/Emasoft/ai-maestro-integrator-agent.git"
-            },
-            "description": "INTEGRATOR title \u2014 quality gates, PR review, merging, releases",
-            "version": "1.2.7",
-            "category": "role-plugin",
-            "scope": "local"
-        },
-        {
-            "name": "ai-maestro-programmer-agent",
-            "source": {
-                "source": "url",
-                "url": "https://github.com/Emasoft/ai-maestro-programmer-agent.git"
-            },
-            "description": "PROGRAMMER title \u2014 general-purpose implementer, writes code",
-            "version": "1.0.22",
-            "category": "role-plugin",
-            "scope": "local"
-        },
-        {
-            "name": "ai-maestro-maintainer-agent",
-            "source": {
-                "source": "url",
-                "url": "https://github.com/Emasoft/ai-maestro-maintainer-agent.git"
-            },
-            "description": "MAINTAINER title \u2014 polls GitHub issues, triages bugs, fixes valid issues via publish pipeline",
-            "version": "1.0.0",
-            "category": "role-plugin",
-            "scope": "local"
-        }
-    ]
+    {
+      "name": "ai-maestro-chief-of-staff",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Emasoft/ai-maestro-chief-of-staff.git"
+      },
+      "description": "CHIEF-OF-STAFF title \u2014 per-team agent management, staff planning",
+      "version": "2.12.3",
+      "category": "role-plugin",
+      "scope": "local",
+      "repository": "https://github.com/Emasoft/ai-maestro-chief-of-staff"
+    },
+    {
+      "name": "ai-maestro-architect-agent",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Emasoft/ai-maestro-architect-agent.git"
+      },
+      "description": "ARCHITECT title \u2014 design documents, requirements, architecture",
+      "version": "2.4.2",
+      "category": "role-plugin",
+      "scope": "local",
+      "repository": "https://github.com/Emasoft/ai-maestro-architect-agent"
+    },
+    {
+      "name": "ai-maestro-orchestrator-agent",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Emasoft/ai-maestro-orchestrator-agent.git"
+      },
+      "description": "ORCHESTRATOR title \u2014 task distribution, kanban, coordination",
+      "version": "1.6.5",
+      "category": "role-plugin",
+      "scope": "local",
+      "repository": "https://github.com/Emasoft/ai-maestro-orchestrator-agent"
+    },
+    {
+      "name": "ai-maestro-integrator-agent",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Emasoft/ai-maestro-integrator-agent.git"
+      },
+      "description": "INTEGRATOR title \u2014 quality gates, PR review, merging, releases",
+      "version": "1.2.7",
+      "category": "role-plugin",
+      "scope": "local",
+      "repository": "https://github.com/Emasoft/ai-maestro-integrator-agent"
+    },
+    {
+      "name": "ai-maestro-programmer-agent",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Emasoft/ai-maestro-programmer-agent.git"
+      },
+      "description": "PROGRAMMER title \u2014 general-purpose implementer, writes code",
+      "version": "1.0.22",
+      "category": "role-plugin",
+      "scope": "local",
+      "repository": "https://github.com/Emasoft/ai-maestro-programmer-agent"
+    },
+    {
+      "name": "ai-maestro-maintainer-agent",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Emasoft/ai-maestro-maintainer-agent.git"
+      },
+      "description": "MAINTAINER title \u2014 polls GitHub issues, triages bugs, fixes valid issues via publish pipeline",
+      "version": "1.0.1",
+      "category": "role-plugin",
+      "scope": "local",
+      "repository": "https://github.com/Emasoft/ai-maestro-maintainer-agent"
+    }
+  ]
 }
