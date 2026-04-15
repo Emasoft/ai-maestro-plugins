@@ -119,6 +119,18 @@
       "category": "role-plugin",
       "scope": "local",
       "repository": "https://github.com/Emasoft/ai-maestro-maintainer-agent"
+    },
+    {
+      "name": "ai-maestro-autonomous-agent",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Emasoft/ai-maestro-autonomous-agent.git"
+      },
+      "description": "AUTONOMOUS title \u2014 mandatory role-plugin for no-team agents; enforces workspace isolation, forbids cross-agent mutation, respects AMP comm graph",
+      "version": "1.0.1",
+      "category": "role-plugin",
+      "scope": "local",
+      "repository": "https://github.com/Emasoft/ai-maestro-autonomous-agent"
     }
   ]
 }
