@@ -17,7 +17,7 @@
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-plugin.git"
       },
-      "description": "AI agent orchestration — 12 skills: agent management, memory search, code graph, AMP messaging, AID identity, docs search, planning, team governance, team kanban, MCP discovery, hook debugging, network security.",
+      "description": "AI agent orchestration \u2014 12 skills: agent management, memory search, code graph, AMP messaging, AID identity, docs search, planning, team governance, team kanban, MCP discovery, hook debugging, network security.",
       "version": "2.4.0",
       "author": {
         "name": "23blocks"
@@ -42,7 +42,7 @@
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent.git"
       },
-      "description": "MANAGER title — user interlocutor, directs other agents",
+      "description": "MANAGER title \u2014 user interlocutor, directs other agents",
       "version": "2.7.3",
       "category": "role-plugin",
       "scope": "local",
@@ -54,7 +54,7 @@
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-chief-of-staff.git"
       },
-      "description": "CHIEF-OF-STAFF title — per-team agent management, staff planning",
+      "description": "CHIEF-OF-STAFF title \u2014 per-team agent management, staff planning",
       "version": "2.12.7",
       "category": "role-plugin",
       "scope": "local",
@@ -66,7 +66,7 @@
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-architect-agent.git"
       },
-      "description": "ARCHITECT title — design documents, requirements, architecture",
+      "description": "ARCHITECT title \u2014 design documents, requirements, architecture",
       "version": "2.4.7",
       "category": "role-plugin",
       "scope": "local",
@@ -78,7 +78,7 @@
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-orchestrator-agent.git"
       },
-      "description": "ORCHESTRATOR title — task distribution, kanban, coordination",
+      "description": "ORCHESTRATOR title \u2014 task distribution, kanban, coordination",
       "version": "1.6.11",
       "category": "role-plugin",
       "scope": "local",
@@ -90,7 +90,7 @@
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-integrator-agent.git"
       },
-      "description": "INTEGRATOR title — quality gates, PR review, merging, releases",
+      "description": "INTEGRATOR title \u2014 quality gates, PR review, merging, releases",
       "version": "1.2.11",
       "category": "role-plugin",
       "scope": "local",
@@ -102,7 +102,7 @@
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-programmer-agent.git"
       },
-      "description": "PROGRAMMER title — general-purpose implementer, writes code",
+      "description": "PROGRAMMER title \u2014 general-purpose implementer, writes code",
       "version": "1.0.25",
       "category": "role-plugin",
       "scope": "local",
@@ -114,7 +114,7 @@
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-maintainer-agent.git"
       },
-      "description": "MAINTAINER title — polls GitHub issues, triages bugs, fixes valid issues via publish pipeline",
+      "description": "MAINTAINER title \u2014 polls GitHub issues, triages bugs, fixes valid issues via publish pipeline",
       "version": "1.0.4",
       "category": "role-plugin",
       "scope": "local",
@@ -126,7 +126,7 @@
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-autonomous-agent.git"
       },
-      "description": "AUTONOMOUS title — mandatory role-plugin for no-team agents; enforces workspace isolation, forbids cross-agent mutation, respects AMP comm graph",
+      "description": "AUTONOMOUS title \u2014 mandatory role-plugin for no-team agents; enforces workspace isolation, forbids cross-agent mutation, respects AMP comm graph",
       "version": "1.0.2",
       "category": "role-plugin",
       "scope": "local",
@@ -138,8 +138,8 @@
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-janitor.git"
       },
-      "description": "Session-scoped janitor — reconciles PRs/worktrees/TRDD drift/task-PR mismatches, auto-resumes on rate-limit, keeps prompt cache warm via Monitors + hooks. No external daemon.",
-      "version": "0.1.0",
+      "description": "Session-scoped janitor \u2014 reconciles PRs/worktrees/TRDD drift/task-PR mismatches, auto-resumes on rate-limit, keeps prompt cache warm via Monitors + hooks. No external daemon.",
+      "version": "0.1.1",
       "category": "core-plugin",
       "scope": "project",
       "repository": "https://github.com/Emasoft/ai-maestro-janitor"
