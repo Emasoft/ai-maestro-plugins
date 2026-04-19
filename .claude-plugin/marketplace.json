@@ -138,7 +138,7 @@
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-janitor.git"
       },
-      "description": "Session-scoped janitor \u2014 reconciles PRs/worktrees/TRDD drift/task-PR mismatches, auto-resumes on rate-limit, keeps prompt cache warm via Monitors + hooks. No external daemon.",
+      "description": "Session-scoped janitor \u2014 reconciles PRs/worktrees/TRDD drift/task-PR mismatches, auto-resumes on rate-limit, keeps prompt cache warm via a single durable CronCreate heartbeat. No external daemon.",
       "version": "0.2.1",
       "category": "core-plugin",
       "scope": "project",
