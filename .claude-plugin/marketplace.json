@@ -115,7 +115,7 @@
         "url": "https://github.com/Emasoft/ai-maestro-maintainer-agent.git"
       },
       "description": "MAINTAINER title \u2014 polls GitHub issues, triages bugs, fixes valid issues via publish pipeline",
-      "version": "1.0.7",
+      "version": "1.0.8",
       "category": "role-plugin",
       "scope": "local",
       "repository": "https://github.com/Emasoft/ai-maestro-maintainer-agent"
