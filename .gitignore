@@ -11,3 +11,12 @@ node_modules/
 
 # Build cache (cloned external sources)
 .build-cache/
+
+# Claude Code plugin runtime state
+/.claude/
+/.janitor/
+/.rechecker/
+
+# Agent reports (private data — never commit)
+/reports/
+/reports_dev/
