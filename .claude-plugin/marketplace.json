@@ -43,7 +43,7 @@
         "url": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent.git"
       },
       "description": "MANAGER title \u2014 user interlocutor, directs other agents",
-      "version": "2.9.0",
+      "version": "2.9.1",
       "category": "role-plugin",
       "scope": "local",
       "repository": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent"
