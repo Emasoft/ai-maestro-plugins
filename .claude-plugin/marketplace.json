@@ -143,6 +143,33 @@
       "category": "core-plugin",
       "scope": "project",
       "repository": "https://github.com/Emasoft/ai-maestro-janitor"
+    },
+    {
+      "name": "ai-maestro-visual-communicator",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Emasoft/ai-maestro-visual-communicator-plugin.git"
+      },
+      "description": "Generate interactive HTML pages \u2014 diagrams, diff reviews, plan reviews, slide decks, data tables, and v2 modal-comment agent reports. Every page sends the user's selection (or per-element comment thread) back to the agent.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Emasoft"
+      },
+      "homepage": "https://github.com/Emasoft/ai-maestro-visual-communicator-plugin",
+      "license": "MIT",
+      "keywords": [
+        "interactive-html",
+        "agent-reports",
+        "modal-comments",
+        "diagrams",
+        "diff-review",
+        "plan-review",
+        "slides",
+        "mermaid",
+        "regex-vis"
+      ],
+      "category": "visualization",
+      "repository": "https://github.com/Emasoft/ai-maestro-visual-communicator-plugin"
     }
   ]
 }
