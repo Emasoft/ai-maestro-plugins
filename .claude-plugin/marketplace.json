@@ -45,7 +45,6 @@
       "description": "MANAGER title \u2014 user interlocutor, directs other agents",
       "version": "2.9.1",
       "category": "role-plugin",
-      "scope": "local",
       "repository": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent"
     },
     {
@@ -57,7 +56,6 @@
       "description": "CHIEF-OF-STAFF title \u2014 per-team agent management, staff planning",
       "version": "2.12.8",
       "category": "role-plugin",
-      "scope": "local",
       "repository": "https://github.com/Emasoft/ai-maestro-chief-of-staff"
     },
     {
@@ -69,7 +67,6 @@
       "description": "ARCHITECT title \u2014 design documents, requirements, architecture",
       "version": "2.4.8",
       "category": "role-plugin",
-      "scope": "local",
       "repository": "https://github.com/Emasoft/ai-maestro-architect-agent"
     },
     {
@@ -81,7 +78,6 @@
       "description": "ORCHESTRATOR title \u2014 task distribution, kanban, coordination",
       "version": "1.6.12",
       "category": "role-plugin",
-      "scope": "local",
       "repository": "https://github.com/Emasoft/ai-maestro-orchestrator-agent"
     },
     {
@@ -93,7 +89,6 @@
       "description": "INTEGRATOR title \u2014 quality gates, PR review, merging, releases",
       "version": "1.2.14",
       "category": "role-plugin",
-      "scope": "local",
       "repository": "https://github.com/Emasoft/ai-maestro-integrator-agent"
     },
     {
@@ -105,7 +100,6 @@
       "description": "PROGRAMMER title \u2014 general-purpose implementer, writes code",
       "version": "1.0.25",
       "category": "role-plugin",
-      "scope": "local",
       "repository": "https://github.com/Emasoft/ai-maestro-programmer-agent"
     },
     {
@@ -117,7 +111,6 @@
       "description": "MAINTAINER title \u2014 polls GitHub issues, triages bugs, fixes valid issues via publish pipeline",
       "version": "1.0.9",
       "category": "role-plugin",
-      "scope": "local",
       "repository": "https://github.com/Emasoft/ai-maestro-maintainer-agent"
     },
     {
@@ -129,7 +122,6 @@
       "description": "AUTONOMOUS title \u2014 mandatory role-plugin for no-team agents; enforces workspace isolation, forbids cross-agent mutation, respects AMP comm graph",
       "version": "1.0.8",
       "category": "role-plugin",
-      "scope": "local",
       "repository": "https://github.com/Emasoft/ai-maestro-autonomous-agent"
     },
     {
@@ -141,17 +133,16 @@
       "description": "Session-scoped janitor \u2014 reconciles PRs/worktrees/TRDD drift/task-PR mismatches, auto-resumes on rate-limit, keeps prompt cache warm via a single durable CronCreate heartbeat. No external daemon.",
       "version": "0.4.3",
       "category": "core-plugin",
-      "scope": "project",
       "repository": "https://github.com/Emasoft/ai-maestro-janitor"
     },
     {
-      "name": "ai-maestro-visual-communicator",
+      "name": "ai-maestro-visual-communicator-plugin",
       "source": {
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-visual-communicator-plugin.git"
       },
       "description": "Generate interactive HTML pages \u2014 diagrams, diff reviews, plan reviews, slide decks, data tables, and v2 modal-comment agent reports. Every page sends the user's selection (or per-element comment thread) back to the agent.",
-      "version": "1.0.0",
+      "version": "1.2.2",
       "author": {
         "name": "Emasoft"
       },
