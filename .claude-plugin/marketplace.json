@@ -18,7 +18,7 @@
         "url": "https://github.com/Emasoft/ai-maestro-plugin.git"
       },
       "description": "AI agent orchestration \u2014 12 skills: agent management, memory search, code graph, AMP messaging, AID identity, docs search, planning, team governance, team kanban, MCP discovery, hook debugging, network security.",
-      "version": "2.5.8",
+      "version": "2.5.9",
       "author": {
         "name": "23blocks"
       },
