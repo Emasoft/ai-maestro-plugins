@@ -23,10 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout marketplace
-        uses: actions/checkout@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           token: ${{ secrets.MARKETPLACE_PAT }}
           fetch-depth: 1
+          # Do not write the PAT into .git/config for the rest of the job;
+          # the push step authenticates explicitly instead.
+          persist-credentials: false
 
       - name: Configure git
         run: |
@@ -34,7 +37,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Setup python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.12'
 
@@ -119,26 +122,38 @@ jobs:
           PY
 
       - name: Commit and push if changed
+        env:
+          GH_TOKEN: ${{ secrets.MARKETPLACE_PAT }}
+          PLUGIN: ${{ steps.target.outputs.plugin }}
+          VERSION: ${{ steps.target.outputs.version || steps.fetch.outputs.version }}
         run: |
           set -euo pipefail
           if git diff --quiet -- .claude-plugin/marketplace.json; then
             echo "No changes."
             exit 0
           fi
+          # Checkout ran with persist-credentials: false, so origin has no
+          # stored credential; authenticate this push explicitly. The PAT is
+          # the repo owner's, so the push passes the branch ruleset via the
+          # admin bypass while everyone else must go through a PR.
+          PUSH_URL="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git add .claude-plugin/marketplace.json
-          git commit -m "chore: bump ${{ steps.target.outputs.plugin }} to ${{ steps.target.outputs.version || steps.fetch.outputs.version }} [skip ci]"
+          git commit -m "chore: bump ${PLUGIN} to ${VERSION} [skip ci]"
           for attempt in 1 2 3; do
-            if git push; then exit 0; fi
-            git pull --rebase origin main
+            if git push "$PUSH_URL" HEAD:main; then exit 0; fi
+            git pull --rebase "$PUSH_URL" main
           done
           exit 1
 
       - name: Job summary
         if: always()
+        env:
+          PLUGIN: ${{ steps.target.outputs.plugin }}
+          VERSION: ${{ steps.target.outputs.version || steps.fetch.outputs.version }}
         run: |
           {
             echo "## Plugin Version Update"
             echo ""
-            echo "- Plugin: ${{ steps.target.outputs.plugin }}"
-            echo "- Version: ${{ steps.target.outputs.version || steps.fetch.outputs.version }}"
+            echo "- Plugin: ${PLUGIN}"
+            echo "- Version: ${VERSION}"
           } >> "$GITHUB_STEP_SUMMARY"

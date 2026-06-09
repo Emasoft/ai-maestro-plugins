@@ -37,7 +37,7 @@ The flow:
 
 **Concurrency guard**: `concurrency.group: update-plugin-version`, `cancel-in-progress: false` — two plugins released simultaneously serialize, never collide on `marketplace.json`.
 
-**Required secret**: `MARKETPLACE_PAT` — GitHub PAT with `contents: write` on this repo. Used both for the checkout (so the push isn't blocked by branch protection) and for the cross-repo `gh api` call when fetching plugin.json. If you see `MARKETPLACE_PAT errors in CI`, the token is missing or expired in repo settings → Secrets.
+**Required secret**: `MARKETPLACE_PAT` — GitHub PAT with `contents: write` on this repo. Used for the checkout fetch (`persist-credentials: false`, so it is never stored in `.git/config`), for the explicit `git push` in the final step (the PAT belongs to the repo owner, whose admin role bypasses the `baseline-pr-and-checks` ruleset on `main`), and for the cross-repo `gh api` call when fetching plugin.json. If you see `MARKETPLACE_PAT errors in CI`, the token is missing or expired in repo settings → Secrets.
 
 ## Working with marketplace.json
 
