@@ -2,27 +2,22 @@
 
 Official plugin marketplace for [AI Maestro](https://github.com/Emasoft/ai-maestro).
 
-This repo is a **plugin index** — it lists available plugins that Claude Code can install. The plugins themselves live in their own repos.
-
-## Installing Plugins
-
-```bash
-# Install the core AI Maestro plugin (11 skills, 12 commands)
-claude plugin install ai-maestro-plugin ai-maestro-plugins --scope user
-
-# Install a role-plugin (installs to agent's project scope)
-claude plugin install ai-maestro-architect-agent ai-maestro-plugins --scope local
-```
+This repo is a **plugin index** — it lists available plugins that Claude Code can install. The plugins themselves live in their own repos. Plugin versions are tracked in [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json) and bump automatically when an upstream plugin tags a release, so the tables below intentionally omit version numbers.
 
 ## Available Plugins
 
-### Core Plugin
+### Core Plugins
 
-| Plugin | Description | Version |
-|--------|-------------|---------|
-| [ai-maestro-plugin](https://github.com/Emasoft/ai-maestro-plugin) | Agent management, AMP messaging, AID identity, memory search, code graph, docs search, planning, team governance, team kanban, MCP discovery, hook debugging | 2.3.1 |
+Install with `--scope user` (all sessions) or `--scope project`.
+
+| Plugin | Category | Description |
+|--------|----------|-------------|
+| [ai-maestro-plugin](https://github.com/Emasoft/ai-maestro-plugin) | productivity | Agent management, memory search, code graph, AMP messaging, AID identity, docs search, planning, team governance, team kanban, MCP discovery, hook debugging, network security. Requires the AI Maestro server. |
+| [ai-maestro-janitor](https://github.com/Emasoft/ai-maestro-janitor) | core-plugin | Session-scoped janitor — reconciles PRs, worktrees, TRDD drift, and task/PR mismatches, auto-resumes on rate-limit, keeps the prompt cache warm via a single durable cron heartbeat. No external daemon. |
 
 ### Role-Plugins
+
+One per AI Maestro governance title. Install with `--scope local` inside the agent's project directory.
 
 | Plugin | Governance Title | Description |
 |--------|-----------------|-------------|
@@ -31,11 +26,15 @@ claude plugin install ai-maestro-architect-agent ai-maestro-plugins --scope loca
 | [ai-maestro-architect-agent](https://github.com/Emasoft/ai-maestro-architect-agent) | ARCHITECT | Design documents, requirements, architecture |
 | [ai-maestro-orchestrator-agent](https://github.com/Emasoft/ai-maestro-orchestrator-agent) | ORCHESTRATOR | Task distribution, kanban, coordination |
 | [ai-maestro-integrator-agent](https://github.com/Emasoft/ai-maestro-integrator-agent) | INTEGRATOR | Quality gates, PR review, merging, releases |
-| [ai-maestro-programmer-agent](https://github.com/Emasoft/ai-maestro-programmer-agent) | MEMBER | General-purpose implementer, writes code |
+| [ai-maestro-programmer-agent](https://github.com/Emasoft/ai-maestro-programmer-agent) | PROGRAMMER | General-purpose implementer, writes code |
+| [ai-maestro-maintainer-agent](https://github.com/Emasoft/ai-maestro-maintainer-agent) | MAINTAINER | Polls GitHub issues, triages bugs, fixes valid issues via publish pipeline |
+| [ai-maestro-autonomous-agent](https://github.com/Emasoft/ai-maestro-autonomous-agent) | AUTONOMOUS | Mandatory role-plugin for no-team agents; enforces workspace isolation, forbids cross-agent mutation, respects the AMP comm graph |
 
-## License
+### Visualization
 
-MIT
+| Plugin | Description |
+|--------|-------------|
+| [ai-maestro-visual-communicator-plugin](https://github.com/Emasoft/ai-maestro-visual-communicator-plugin) | Interactive HTML pages — diagrams, diff reviews, plan reviews, slide decks, data tables, and modal-comment agent reports. Every page sends the user's selection back to the agent. |
 
 ## Installation
 
@@ -88,6 +87,9 @@ claude plugin marketplace remove ai-maestro-plugins
 **Plugin not found after marketplace add**
 Run `claude plugin marketplace update ai-maestro-plugins` to refresh the index, then retry the install.
 
+**Plugin not found with the name from its repo URL**
+Install names come from each plugin's `.claude-plugin/plugin.json` `name` field (mirrored in this repo's `marketplace.json`), which is not always identical to the GitHub repo name. Check the tables above for the exact install name.
+
 **Role-plugin not activating**
 Role-plugins must be installed with `--scope local` inside the agent's project directory. Verify you are in the correct working directory before installing.
 
@@ -105,3 +107,7 @@ Plugin changes (skills, hooks, commands) take effect only after restarting Claud
 
 **MARKETPLACE_PAT errors in CI**
 The notify-marketplace workflow in each plugin repo requires a PAT secret named `MARKETPLACE_PAT`. See each plugin repo's `.github/workflows/notify-marketplace.yml` setup comments for how to create and store the token.
+
+## License
+
+MIT
