@@ -17,7 +17,7 @@
         "source": "url",
         "url": "https://github.com/Emasoft/ai-maestro-plugin.git"
       },
-      "description": "AI agent orchestration \u2014 12 skills: agent management, memory search, code graph, AMP messaging, AID identity, docs search, planning, team governance, team kanban, MCP discovery, hook debugging, network security.",
+      "description": "AI agent orchestration \u2014 agent management, memory search (transcripts), markdown memory protocol (memory-recall/memory-write skills, memory-protocol rule, memgrep), code graph, AMP messaging, AID identity, docs search, planning, team governance, team kanban, MCP discovery, hook debugging, network security. Requires AI Maestro server.",
       "version": "2.6.1",
       "author": {
         "name": "23blocks"
@@ -29,9 +29,17 @@
         "agents",
         "orchestration",
         "memory",
+        "memory-protocol",
+        "memgrep",
+        "markdown-memory",
         "graph",
+        "governance",
+        "kanban",
+        "mcp",
         "messaging",
-        "amp"
+        "identity",
+        "AMP",
+        "AID"
       ],
       "category": "productivity",
       "repository": "https://github.com/Emasoft/ai-maestro-plugin"
