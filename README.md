@@ -12,7 +12,7 @@ Install with `--scope user` (all sessions) or `--scope project`.
 
 | Plugin | Category | Description |
 |--------|----------|-------------|
-| [ai-maestro-plugin](https://github.com/Emasoft/ai-maestro-plugin) | productivity | Agent management, memory search, code graph, AMP messaging, AID identity, docs search, planning, team governance, team kanban, MCP discovery, hook debugging, network security. Requires the AI Maestro server. |
+| [ai-maestro-plugin](https://github.com/Emasoft/ai-maestro-plugin) | productivity | Agent management, memory search (transcripts), markdown memory protocol (memory-recall/memory-write + memgrep), code graph, AMP messaging, AID identity, docs search, planning, team governance, team kanban, MCP discovery, hook debugging, network security. Requires the AI Maestro server. |
 | [ai-maestro-janitor](https://github.com/Emasoft/ai-maestro-janitor) | core-plugin | Session-scoped janitor — reconciles PRs, worktrees, TRDD drift, and task/PR mismatches, auto-resumes on rate-limit, keeps the prompt cache warm via a single durable cron heartbeat. No external daemon. |
 
 ### Role-Plugins
@@ -35,6 +35,17 @@ One per AI Maestro governance title. Install with `--scope local` inside the age
 | Plugin | Description |
 |--------|-------------|
 | [ai-maestro-visual-communicator-plugin](https://github.com/Emasoft/ai-maestro-visual-communicator-plugin) | Interactive HTML pages — diagrams, diff reviews, plan reviews, slide decks, data tables, and modal-comment agent reports. Every page sends the user's selection back to the agent. |
+
+## Memory system
+
+`ai-maestro-plugin` (v2.6.0+) hosts the ecosystem's shared memory system, made of two **complementary** layers:
+
+| Layer | What it remembers | How to use it |
+|-------|-------------------|---------------|
+| `memory-search` skill | **Conversation transcripts** — what was said in past sessions, indexed by the AI Maestro server | Requires the AI Maestro server; query past conversations by topic |
+| Markdown memory protocol | **Curated notes** — durable facts an agent chose to write down, one markdown file per fact, indexed by symptom | `memory-recall` / `memory-write` skills + the `memory-protocol` rule; recall is powered by the bundled [`memgrep`](https://github.com/Emasoft/ai-maestro-plugin/tree/main/scripts/memgrep) tool (`scripts/install-memgrep.sh`; degrades to plain `grep` when memgrep is not installed) |
+
+**Role-plugins and the shared protocol:** the Claude Code marketplace spec registers plugins only — there is no skill-level registry or cross-plugin dependency field. A role-plugin gets the shared memory protocol by being installed **alongside** `ai-maestro-plugin`: skills resolve at runtime when both plugins are active in the session. Install the core plugin at user scope and the role-plugin at local scope (see Installation below).
 
 ## Installation
 
