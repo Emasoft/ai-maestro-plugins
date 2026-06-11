@@ -106,7 +106,7 @@
         "url": "https://github.com/Emasoft/ai-maestro-programmer-agent.git"
       },
       "description": "PROGRAMMER title \u2014 general-purpose implementer, writes code",
-      "version": "1.0.26",
+      "version": "1.1.0",
       "category": "role-plugin",
       "repository": "https://github.com/Emasoft/ai-maestro-programmer-agent"
     },
