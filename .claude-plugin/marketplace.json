@@ -84,7 +84,7 @@
         "url": "https://github.com/Emasoft/ai-maestro-orchestrator-agent.git"
       },
       "description": "ORCHESTRATOR title \u2014 task distribution, kanban, coordination",
-      "version": "1.8.1",
+      "version": "1.8.2",
       "category": "role-plugin",
       "repository": "https://github.com/Emasoft/ai-maestro-orchestrator-agent"
     },
