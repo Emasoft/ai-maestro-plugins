@@ -169,6 +169,33 @@
       ],
       "category": "visualization",
       "repository": "https://github.com/Emasoft/ai-maestro-visual-communicator-plugin"
+    },
+    {
+      "name": "web-scenario-tester",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Emasoft/ai-maestro-web-scenario-tester.git"
+      },
+      "description": "Browser-driven UI scenario-testing harness: author, run, and batch end-to-end scenario tests against a running web app via dev-browser, with fix-as-you-go, screenshots, structured reports, and 11th-hour improvement proposals. AI-Maestro MEMBER role-plugin.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Emasoft"
+      },
+      "homepage": "https://github.com/Emasoft/ai-maestro-web-scenario-tester",
+      "license": "MIT",
+      "keywords": [
+        "scenario-testing",
+        "ui-testing",
+        "e2e",
+        "dev-browser",
+        "browser-automation",
+        "ai-maestro"
+      ],
+      "category": "testing",
+      "repository": "https://github.com/Emasoft/ai-maestro-web-scenario-tester"
     }
+  ],
+  "allowCrossMarketplaceDependenciesOn": [
+    "dev-browser-marketplace"
   ]
 }
