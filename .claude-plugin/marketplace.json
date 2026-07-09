@@ -201,7 +201,7 @@
         "url": "https://github.com/Emasoft/ai-maestro-webdesign.git"
       },
       "description": "Consolidated web-design MEMBER role-plugin: design judgment (Claude Design principles), ASCII sketch/parse, diagrams, infographics, style extraction, design.md authoring/audit, and browser-verified preview. amw-design-principles orchestrates every sub-skill; amw-dev-browser is the single browser-automation primitive.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "author": {
         "name": "Emasoft"
       },
