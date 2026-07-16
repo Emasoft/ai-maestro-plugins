@@ -219,6 +219,34 @@
       ],
       "category": "design",
       "repository": "https://github.com/Emasoft/ai-maestro-webdesign"
+    },
+    {
+      "name": "dev-browser",
+      "source": {
+        "source": "github",
+        "repo": "Emasoft/dev-browser",
+        "sha": "b549fb0ecf9fa339100419d597ba4d04cda3e016"
+      },
+      "description": "Browser automation skill with persistent page state for developers and AI agents. Emasoft-audited fork of SawyerHood/dev-browser, source-pinned at the upstream v1.0.0 release commit (supply-chain pin — ai-maestro-plugin#19, TRDD-LEMJMCAQ). Resolver tag dev-browser--v1.0.0 targets the same commit.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Sawyer Hood"
+      },
+      "license": "MIT",
+      "homepage": "https://github.com/Emasoft/dev-browser",
+      "keywords": [
+        "browser",
+        "playwright",
+        "automation",
+        "testing",
+        "debugging"
+      ],
+      "category": "testing",
+      "strict": false,
+      "skills": [
+        "./skills/dev-browser"
+      ],
+      "repository": "https://github.com/Emasoft/dev-browser"
     }
   ],
   "allowCrossMarketplaceDependenciesOn": [
