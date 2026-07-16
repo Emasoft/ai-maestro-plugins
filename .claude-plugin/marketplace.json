@@ -18,7 +18,7 @@
         "url": "https://github.com/Emasoft/ai-maestro-plugin.git"
       },
       "description": "AI agent orchestration \u2014 agent management, memory search (transcripts), markdown memory protocol (memory-recall/memory-write skills, memory-protocol rule, memgrep), code graph, AMP messaging, AID identity, docs search, planning, team governance, team kanban, MCP discovery, hook debugging, network security. Requires AI Maestro server.",
-      "version": "2.9.0",
+      "version": "2.10.0",
       "author": {
         "name": "23blocks"
       },
@@ -227,7 +227,7 @@
         "repo": "Emasoft/dev-browser",
         "sha": "b549fb0ecf9fa339100419d597ba4d04cda3e016"
       },
-      "description": "Browser automation skill with persistent page state for developers and AI agents. Emasoft-audited fork of SawyerHood/dev-browser, source-pinned at the upstream v1.0.0 release commit (supply-chain pin — ai-maestro-plugin#19, TRDD-LEMJMCAQ). Resolver tag dev-browser--v1.0.0 targets the same commit.",
+      "description": "Browser automation skill with persistent page state for developers and AI agents. Emasoft-audited fork of SawyerHood/dev-browser, source-pinned at the upstream v1.0.0 release commit (supply-chain pin \u2014 ai-maestro-plugin#19, TRDD-LEMJMCAQ). Resolver tag dev-browser--v1.0.0 targets the same commit.",
       "version": "1.0.0",
       "author": {
         "name": "Sawyer Hood"
