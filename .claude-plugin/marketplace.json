@@ -56,6 +56,17 @@
       "repository": "https://github.com/Emasoft/ai-maestro-assistant-manager-agent"
     },
     {
+      "name": "ai-maestro-assistant-role-agent",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/Emasoft/ai-maestro-assistant-role-agent.git"
+      },
+      "description": "ASSISTANT title — one per human user; plans like a MANAGER, programs like an AUTONOMOUS agent",
+      "version": "0.3.0",
+      "category": "role-plugin",
+      "repository": "https://github.com/Emasoft/ai-maestro-assistant-role-agent"
+    },
+    {
       "name": "ai-maestro-chief-of-staff",
       "source": {
         "source": "url",
