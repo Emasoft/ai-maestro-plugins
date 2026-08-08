@@ -18,7 +18,7 @@
         "url": "https://github.com/Emasoft/ai-maestro-plugin.git"
       },
       "description": "AI agent orchestration \u2014 agent management, memory search (transcripts), markdown memory protocol (memory-recall/memory-write skills, memory-protocol rule, memgrep), code graph, AMP messaging, AID identity, docs search, planning, team governance, team kanban, MCP discovery, hook debugging, network security. Requires AI Maestro server.",
-      "version": "3.1.2",
+      "version": "3.1.3",
       "author": {
         "name": "23blocks"
       },
