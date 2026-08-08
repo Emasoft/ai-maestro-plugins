@@ -106,7 +106,7 @@
         "url": "https://github.com/Emasoft/ai-maestro-integrator-agent.git"
       },
       "description": "INTEGRATOR title \u2014 quality gates, PR review, merging, releases",
-      "version": "1.4.1",
+      "version": "1.5.0",
       "category": "role-plugin",
       "repository": "https://github.com/Emasoft/ai-maestro-integrator-agent"
     },
