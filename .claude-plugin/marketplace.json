@@ -84,7 +84,7 @@
         "url": "https://github.com/Emasoft/ai-maestro-architect-agent.git"
       },
       "description": "ARCHITECT title \u2014 design documents, requirements, architecture",
-      "version": "2.14.1",
+      "version": "2.14.2",
       "category": "role-plugin",
       "repository": "https://github.com/Emasoft/ai-maestro-architect-agent"
     },
