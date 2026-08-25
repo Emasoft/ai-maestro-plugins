@@ -161,7 +161,7 @@
         "url": "https://github.com/Emasoft/ai-maestro-visual-communicator-plugin.git"
       },
       "description": "Generate interactive HTML pages \u2014 diagrams, diff reviews, plan reviews, slide decks, data tables, and v2 modal-comment agent reports. Every page sends the user's selection (or per-element comment thread) back to the agent.",
-      "version": "1.5.1",
+      "version": "1.5.2",
       "author": {
         "name": "Emasoft"
       },
