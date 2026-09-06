@@ -126,9 +126,37 @@ jobs:
       # README one commit behind forever, and a README-only diff (the manifest
       # already correct, the table stale) would never be committed at all.
       - name: Regenerate README plugin table
-        run: python3 scripts/render_readme_table.py
+        id: versions
+        # SKIPPED on ONE case only: `plugins` is present, IS a list, and is EMPTY.
+        # This job runs UNATTENDED, so an accidentally emptied manifest would
+        # otherwise have its table blanked AND COMMITTED here — and the --check gate
+        # in validate-readme-table.yml would then PASS, because README and manifest
+        # agree. The gate would arrive after the damage it exists to catch. Leaving
+        # the rows in place makes --check go RED instead, so a human investigates.
+        #
+        # The discrimination is exactly the renderer's own: a MISSING `plugins` key
+        # and a NON-LIST `plugins` both "count zero" under any naive count, so a
+        # count-based skip would silently swallow the two structural failures the
+        # renderer refuses loudly. Those fall through and redden the job.
+        #
+        # It is a `python -c` predicate inside an `if`, not `jq -e`: the default
+        # shell here is `bash -e`, and a bare `jq -e` exits 1 on a false result,
+        # which would abort the step on the NORMAL populated path.
+        run: |
+          if python3 -c 'import json, sys; d = json.load(open(".claude-plugin/marketplace.json", encoding="utf-8")); p = d.get("plugins") if isinstance(d, dict) else None; sys.exit(0 if isinstance(p, list) and not p else 1)' 2>/dev/null; then
+            echo "manifest_empty=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::.claude-plugin/marketplace.json declares an EMPTY plugin list - SKIPPING the README table rewrite, and skipping the commit, so an accidental emptying cannot blank and commit the table. If this is intentional, run 'python3 scripts/render_readme_table.py' by hand and commit the result."
+          else
+            echo "manifest_empty=false" >> "$GITHUB_OUTPUT"
+            python3 scripts/render_readme_table.py
+          fi
 
       - name: Commit and push if changed
+        # The other half of the empty-manifest guard: on that path the renderer was
+        # skipped, so the commit is skipped with it. With no plugins in the manifest
+        # the version-bump step above changed nothing either, so this skips a commit
+        # that would have been either a no-op or the blanked table.
+        if: steps.versions.outputs.manifest_empty != 'true'
         env:
           GH_TOKEN: ${{ secrets.MARKETPLACE_PAT }}
           PLUGIN: ${{ steps.target.outputs.plugin }}
