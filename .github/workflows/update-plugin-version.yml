@@ -121,6 +121,13 @@ jobs:
               f.write('\n')
           PY
 
+      # Runs BEFORE the change-check below, and its output is staged in the same
+      # commit. Order is load-bearing: rendering after the check would leave the
+      # README one commit behind forever, and a README-only diff (the manifest
+      # already correct, the table stale) would never be committed at all.
+      - name: Regenerate README plugin table
+        run: python3 scripts/render_readme_table.py
+
       - name: Commit and push if changed
         env:
           GH_TOKEN: ${{ secrets.MARKETPLACE_PAT }}
@@ -128,7 +135,7 @@ jobs:
           VERSION: ${{ steps.target.outputs.version || steps.fetch.outputs.version }}
         run: |
           set -euo pipefail
-          if git diff --quiet -- .claude-plugin/marketplace.json; then
+          if git diff --quiet -- .claude-plugin/marketplace.json README.md; then
             echo "No changes."
             exit 0
           fi
@@ -137,7 +144,7 @@ jobs:
           # the repo owner's, so the push passes the branch ruleset via the
           # admin bypass while everyone else must go through a PR.
           PUSH_URL="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git add .claude-plugin/marketplace.json
+          git add .claude-plugin/marketplace.json README.md
           git commit -m "chore: bump ${PLUGIN} to ${VERSION} [skip ci]"
           for attempt in 1 2 3; do
             if git push "$PUSH_URL" HEAD:main; then exit 0; fi
