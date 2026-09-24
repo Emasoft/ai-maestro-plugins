@@ -1,0 +1,48 @@
+name: Validate README plugin table
+
+# The Update-plugin-version workflow regenerates the README table and commits it
+# alongside marketplace.json. This gate catches the other direction: a manifest
+# edited by hand (a plugin added, removed, or re-described in a PR) whose README
+# table was not regenerated. Without it the table drifts silently and nothing
+# fails — which is the whole reason the table used to omit versions.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.claude-plugin/marketplace.json'
+      - 'README.md'
+      - 'scripts/render_readme_table.py'
+  pull_request:
+    paths:
+      - '.claude-plugin/marketplace.json'
+      - 'README.md'
+      - 'scripts/render_readme_table.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-readme-table-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-table:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout marketplace
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Setup python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.12'
+
+      # --check makes no edits and exits non-zero the moment the rendered table
+      # would differ from what is committed.
+      - name: Verify README plugin table is up to date
+        run: python3 scripts/render_readme_table.py --check
